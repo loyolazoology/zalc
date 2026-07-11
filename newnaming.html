@@ -24,6 +24,7 @@
 
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
   body{
     text-transform:uppercase;
@@ -37,17 +38,40 @@
     min-height:100vh;
     display:flex;
     justify-content:center;
-    padding:32px 16px 80px;
+    padding:clamp(16px, 5vw, 32px) clamp(12px, 4vw, 16px) clamp(48px, 10vw, 80px);
   }
 
   .ledger{ width:100%; max-width:600px; }
+
+  /* ===== Entrance choreography ===== */
+  @keyframes riseIn{
+    from{ opacity:0; transform:translateY(18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes fieldIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .crestband{ animation:riseIn .6s cubic-bezier(.2,.8,.3,1) both; }
+  .card{ animation:riseIn .6s cubic-bezier(.2,.8,.3,1) .1s both; }
+  .card form .field,
+  .card form .divider,
+  .card form .submit-btn{ animation:fieldIn .5s ease both; }
+  .card form .field:nth-of-type(1){ animation-delay:.18s; }
+  .card form .field:nth-of-type(2){ animation-delay:.24s; }
+  .card form .field:nth-of-type(3){ animation-delay:.30s; }
+  .card form .field:nth-of-type(4){ animation-delay:.36s; }
+  .card form .divider{ animation-delay:.40s; }
+  .card form .field:nth-of-type(5){ animation-delay:.46s; }
+  .card form .field:nth-of-type(6){ animation-delay:.52s; }
+  .card form .submit-btn{ animation-delay:.58s; }
 
   /* ===== Header / crest band ===== */
   .crestband{
     background:var(--ink-deep);
     color:var(--cream);
     border-radius:14px 14px 0 0;
-    padding:26px 28px 22px;
+    padding:clamp(18px, 4vw, 26px) clamp(18px, 5vw, 28px) clamp(16px, 3.5vw, 22px);
     display:flex;
     align-items:center;
     gap:16px;
@@ -66,23 +90,28 @@
     pointer-events:none;
   }
   .crest{
-    width:56px;height:56px;border-radius:50%;
+    width:clamp(46px, 12vw, 56px);
+    height:clamp(46px, 12vw, 56px);
+    border-radius:10px;
     background:var(--parchment);
     color:var(--ink);
     display:flex;align-items:center;justify-content:center;
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:15px;
-    letter-spacing:0.5px;
     flex:none;
-    border:2px solid var(--gold);
-    text-align:center;
-    line-height:1.1;
+    border:1.5px solid var(--gold);
+    padding:6px;
+    position:relative;
+    z-index:1;
+    box-shadow:0 4px 14px -6px rgba(0,0,0,0.5);
   }
-  /* Replace the .crest div with <img src="your-logo.png" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"> once the department logo is available */
-  .crest-text{position:relative;z-index:1;}
-  .assoc-name{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; line-height:1.25; margin:0; text-transform:uppercase; }
-  .dept-name{ font-size:11px; color:#C9D2E0; margin:5px 0 0; line-height:1.55; font-weight:500; letter-spacing:0.2px; text-transform:none; }
+  .crest img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    border-radius:4px;
+    display:block;
+  }
+  .assoc-name{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(16px, 4.4vw, 19px); line-height:1.25; margin:0; text-transform:uppercase; position:relative; z-index:1; }
+  .dept-name{ font-size:11px; color:#C9D2E0; margin:5px 0 0; line-height:1.55; font-weight:500; letter-spacing:0.2px; text-transform:none; position:relative; z-index:1; }
 
   /* ===== Status bar (time + countdown) ===== */
   .statusbar{
@@ -92,15 +121,16 @@
     gap:10px;
     background:var(--ink-deep);
     color:var(--cream);
-    padding:11px 28px;
+    padding:11px clamp(18px, 5vw, 28px);
     font-family:'IBM Plex Mono',monospace;
     font-size:11.5px;
     letter-spacing:1px;
     border-top:1px solid rgba(255,255,255,0.08);
   }
   .statusbar .now{ opacity:0.75; }
-  .statusbar .left{ color:var(--gold-light); font-weight:600; }
-  .statusbar .left.urgent{ color:#E4756A; }
+  .statusbar .left{ color:var(--gold-light); font-weight:600; transition:color .25s ease; }
+  .statusbar .left.urgent{ color:#E4756A; animation:pulseUrgent 1.4s ease-in-out infinite; }
+  @keyframes pulseUrgent{ 0%,100%{opacity:1;} 50%{opacity:.55;} }
 
   /* ===== Card ===== */
   .card{
@@ -108,19 +138,19 @@
     border:1px solid var(--line);
     border-top:none;
     border-radius:0 0 14px 14px;
-    padding:30px 28px 34px;
+    padding:clamp(22px, 5vw, 30px) clamp(18px, 5vw, 28px) clamp(26px, 6vw, 34px);
     box-shadow:0 18px 40px -20px rgba(10,31,61,0.30);
     position:relative;
   }
 
   .ledger-title{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1.8px; color:var(--gold-deep); font-weight:600; margin:0 0 4px; }
-  .ledger-sub{ font-family:'Fraunces',serif; font-size:22px; font-weight:500; margin:0 0 22px; color:var(--ink); text-transform:uppercase; }
+  .ledger-sub{ font-family:'Fraunces',serif; font-size:clamp(19px, 5vw, 22px); font-weight:500; margin:0 0 22px; color:var(--ink); text-transform:uppercase; }
 
   .field{ margin-bottom:24px; }
   .field label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1.2px; color:var(--ink-soft); font-weight:600; margin-bottom:9px; }
   .field .hint{ font-size:12px; color:var(--ink-soft); opacity:0.85; margin-top:7px; line-height:1.55; text-transform:none; }
   .field .err{ font-size:12px; color:var(--error); margin-top:7px; display:none; font-weight:600; }
-  .field.invalid .err{display:block;}
+  .field.invalid .err{display:block; animation:fieldIn .25s ease both;}
 
   input[type=text], input[type=tel]{
     width:100%;
@@ -133,9 +163,9 @@
     color:var(--ink);
     outline:none;
     text-transform:uppercase;
-    transition:border-color .15s, background .15s;
+    transition:border-color .15s, background .15s, box-shadow .15s;
   }
-  input[type=text]:focus, input[type=tel]:focus{ border-color:var(--gold-deep); background:var(--cream); }
+  input[type=text]:focus, input[type=tel]:focus{ border-color:var(--gold-deep); background:var(--cream); box-shadow:0 0 0 3px rgba(201,162,39,0.15); }
   .field.invalid input{border-color:var(--error);}
 
   /* ===== Department ID builder ===== */
@@ -151,12 +181,14 @@
     cursor:pointer;
     color:var(--ink);
     user-select:none;
-    transition:border-color .15s, box-shadow .15s;
+    transition:border-color .15s, box-shadow .15s, transform .15s;
     min-height:20px;
   }
   .segment.active{border-color:var(--gold-deep); box-shadow:0 0 0 3px rgba(201,162,39,0.20);}
   .segment.invalid{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,38,30,0.12);}
   .segment.filled-ok{border-color:var(--gold-deep); background:#FBF4DE;}
+  .segment.pop{ animation:segPop .32s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes segPop{ 0%{transform:scale(1);} 45%{transform:scale(1.08);} 100%{transform:scale(1);} }
   .segment .ph{opacity:0.35;font-weight:500;}
   .hyphen{ font-family:'IBM Plex Mono',monospace; font-size:19px; color:var(--ink-soft); font-weight:600; }
 
@@ -169,7 +201,7 @@
   .shake{animation:shake .4s;}
 
   /* ===== Keypad ===== */
-  .keypad-wrap{ max-height:0; overflow:hidden; transition:max-height .22s ease; }
+  .keypad-wrap{ max-height:0; overflow:hidden; transition:max-height .25s ease; }
   .keypad-wrap.open{max-height:220px; margin-top:10px;}
   .keypad{
     display:flex; flex-wrap:wrap; gap:7px;
@@ -188,8 +220,9 @@
     text-align:center; cursor:pointer;
     color:var(--ink);
     box-shadow:0 2px 0 var(--line);
-    transition:transform .05s, box-shadow .05s;
+    transition:transform .05s, box-shadow .05s, background .15s;
   }
+  .key:hover{background:var(--parchment);}
   .key:active{transform:translateY(2px); box-shadow:0 0 0 var(--line);}
   .key.wide{width:auto; flex:1; min-width:70px; font-size:11px; letter-spacing:0.5px; color:var(--ink);}
 
@@ -203,8 +236,10 @@
     font-family:'IBM Plex Mono',monospace;
     font-size:14px;
     color:var(--ink-soft);
+    word-break:break-all;
+    transition:border-color .2s, background .2s, color .2s;
   }
-  .autogen.ready{color:var(--ink); border-style:solid; border-color:var(--gold-deep);}
+  .autogen.ready{color:var(--ink); border-style:solid; border-color:var(--gold-deep); background:#FBF4DE;}
 
   /* ===== Divider ===== */
   .divider{ display:flex; align-items:center; gap:10px; margin:30px 0 22px; }
@@ -219,9 +254,9 @@
     padding:22px 16px;
     text-align:center;
     cursor:pointer;
-    transition:border-color .15s, background .15s;
+    transition:border-color .15s, background .15s, transform .1s;
   }
-  .dropzone:hover{border-color:var(--gold-deep);}
+  .dropzone:hover{border-color:var(--gold-deep); transform:translateY(-1px);}
   .dropzone.has-file{border-style:solid; border-color:var(--gold-deep); background:var(--cream);}
   .dropzone-label{font-size:13px; color:var(--ink-soft); font-weight:500;}
   .dropzone-label b{color:var(--ink);}
@@ -229,16 +264,19 @@
     display:none; align-items:center; gap:12px; margin-top:14px; text-align:left;
     background:var(--cream); border:1px solid var(--line); border-radius:8px; padding:10px;
   }
-  .file-preview.show{display:flex;}
-  .file-preview img{width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
+  .file-preview.show{display:flex; animation:fieldIn .3s ease both;}
+  .file-preview img.icon{
+    width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--line);
+    flex:none; background:none;
+  }
   .file-preview .icon{
     width:52px;height:52px;border-radius:6px;background:var(--parchment-deep);
     display:flex;align-items:center;justify-content:center;
     font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--ink);
     flex:none;
   }
-  .file-preview .meta{font-size:12px; color:var(--ink-soft); line-height:1.5; text-transform:none;}
-  .file-preview .meta b{color:var(--ink); display:block; font-size:13px;}
+  .file-preview .meta{font-size:12px; color:var(--ink-soft); line-height:1.5; text-transform:none; min-width:0; word-break:break-word;}
+  .file-preview .meta b{color:var(--ink); display:block; font-size:13px; word-break:break-all;}
 
   /* ===== Submit ===== */
   .submit-btn{
@@ -254,17 +292,17 @@
     font-weight:600;
     cursor:pointer;
     margin-top:6px;
-    transition:background .15s, transform .1s, opacity .15s;
+    transition:background .15s, transform .1s, opacity .15s, box-shadow .15s;
   }
-  .submit-btn:hover:not(:disabled){background:var(--ink-deep);}
-  .submit-btn:active:not(:disabled){transform:translateY(1px);}
+  .submit-btn:hover:not(:disabled){background:var(--ink-deep); box-shadow:0 10px 24px -12px rgba(10,31,61,0.5); transform:translateY(-1px);}
+  .submit-btn:active:not(:disabled){transform:translateY(1px); box-shadow:none;}
   .submit-btn:disabled{opacity:0.4; cursor:not-allowed;}
 
   .form-error{ font-size:12px; color:var(--error); text-align:center; margin-top:12px; display:none; }
 
   /* ===== Success ===== */
   .success{ display:none; text-align:center; padding:20px 10px 6px; }
-  .success.show{display:block;}
+  .success.show{display:block; animation:riseIn .4s ease both;}
   .stamp{
     display:inline-block;
     font-family:'IBM Plex Mono',monospace;
@@ -283,7 +321,7 @@
 
   /* ===== Closed state ===== */
   .closed{ display:none; text-align:center; padding:30px 10px 10px; }
-  .closed.show{display:block;}
+  .closed.show{display:block; animation:riseIn .4s ease both;}
   .closed .badge{
     display:inline-block;
     font-family:'IBM Plex Mono',monospace;
@@ -307,15 +345,17 @@
     background:var(--cream);
     border-radius:14px;
     max-width:440px; width:100%;
-    padding:30px 28px 26px;
+    padding:clamp(24px, 6vw, 30px) clamp(20px, 5.5vw, 28px) clamp(22px, 5vw, 26px);
     box-shadow:0 30px 60px -20px rgba(5,15,31,0.5);
     border-top:5px solid var(--gold);
     position:relative;
     animation:modalIn .35s cubic-bezier(.2,.9,.3,1);
+    max-height:90vh;
+    overflow-y:auto;
   }
   @keyframes modalIn{ from{opacity:0; transform:translateY(14px) scale(.98);} to{opacity:1; transform:translateY(0) scale(1);} }
   .modal .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--gold-deep); font-weight:600; margin:0 0 10px; }
-  .modal h2{ font-family:'Fraunces',serif; font-size:24px; font-weight:600; margin:0 0 14px; color:var(--ink); }
+  .modal h2{ font-family:'Fraunces',serif; font-size:clamp(20px, 5.5vw, 24px); font-weight:600; margin:0 0 14px; color:var(--ink); }
   .modal p{ font-size:14px; line-height:1.7; color:var(--ink-soft); margin:0 0 8px; text-transform:none; }
   .modal .deadline-box{
     margin:16px 0 20px;
@@ -333,13 +373,30 @@
     width:100%; background:var(--ink); color:var(--cream); border:none;
     border-radius:9px; padding:15px; font-family:'IBM Plex Mono',monospace;
     font-size:13px; letter-spacing:1.5px; font-weight:600; cursor:pointer;
+    transition:background .15s, transform .1s;
   }
   .modal-next:hover{background:var(--ink-deep);}
+  .modal-next:active{transform:translateY(1px);}
+
+  /* ===== Responsive ===== */
+  @media (max-width:480px){
+    .crestband{ gap:12px; }
+    .assoc-name{ font-size:15px; }
+  }
 
   @media (max-width:420px){
-    .segment{font-size:16px;}
+    .segment{font-size:16px; padding:12px 4px;}
     .key{width:36px;padding:9px 0;font-size:14px;}
     .statusbar{flex-direction:column; align-items:flex-start; gap:3px;}
+    .specimen-row{ gap:6px; }
+    .hyphen{ font-size:15px; }
+  }
+
+  @media (max-width:360px){
+    .crest{ width:42px; height:42px; }
+    .dept-name{ font-size:10px; }
+    .field{ margin-bottom:20px; }
+    .key{width:32px;padding:8px 0;font-size:13px;}
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -363,8 +420,9 @@
 <div class="ledger">
 
   <div class="crestband">
-    <div class="crest"><span class="crest-text">AZB</span></div>
-    <!-- Replace the .crest div above with your department logo image once available -->
+    <div class="crest">
+      <img src="https://static.wixstatic.com/media/81ba89_514c18d8af5e4574b4812e7d27775511~mv2.png" alt="Department crest">
+    </div>
     <div>
       <p class="assoc-name">Zoologist Association of Loyola College</p>
       <p class="dept-name">PG &amp; Research Department of Advanced Zoology and Biotechnology<br>Loyola College (Autonomous), Chennai&nbsp;–&nbsp;34</p>
@@ -379,12 +437,12 @@
   <div class="card">
 
     <form id="regForm">
-      <p class="ledger-title">Field Registration</p>
+      <p class="ledger-title">Personal Details</p>
       <h2 class="ledger-sub">Enter your details below</h2>
 
       <!-- DEPARTMENT ID -->
       <div class="field" id="field-id">
-        <label>Department ID</label>
+        <label>Department No.</label>
         <div class="specimen-row">
           <div class="segment" data-seg="dept" tabindex="0"><span class="ph">25</span></div>
           <span class="hyphen">–</span>
@@ -420,14 +478,14 @@
       <!-- ZALC NAME -->
       <div class="field" id="field-zalc">
         <label>Proposed Name for ZALC <span style="opacity:.6;font-weight:500;">(mammal theme)</span></label>
-        <input type="text" id="zalcName" placeholder="e.g. Clouded Leopard, Sable Antelope, Slender Loris">
+        <input type="text" id="zalcName" placeholder="Your creative name goes here...">
       </div>
 
       <!-- LOGO UPLOAD -->
       <div class="field" id="field-logo">
         <label>Logo Design Proposal</label>
         <div class="dropzone" id="dropzone">
-          <div class="dropzone-label"><b>Tap to upload</b> a PDF or image (JPG/PNG)</div>
+          <div class="dropzone-label"><b>Tap to upload</b><br> a PDF or image (JPG/PNG)</div>
           <input type="file" id="logoFile" accept="application/pdf,image/png,image/jpeg" style="display:none;">
         </div>
         <div class="file-preview" id="filePreview">
@@ -456,12 +514,12 @@
 
   </div>
 
-  <p class="footer-note">Zoologist Association of Loyola College · PG &amp; Research Dept. of Advanced Zoology &amp; Biotechnology</p>
+  <p class="footer-note">Zoologist Association of Loyola College (ZALC)<BR> PG &amp; Research Dept. of Advanced Zoology &amp; Biotechnology</p>
 </div>
 
 <script>
 /* ============ CONFIG ============ */
-const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzV3ZbmqNvly5pDK9x9Cwf-QPBByIhd7YvuRfQ1BMQ8xaH6OvmNxXEj1WCHmyeq1vJXgw/exec";
 const EMAIL_DOMAIN = "loyolacollege.edu";
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -553,6 +611,7 @@ function renderSegment(seg){
   const el = segEls[seg];
   const val = segValues[seg];
   const cfg = SEG_CONFIG[seg];
+  const wasFilledOk = el.classList.contains('filled-ok');
   el.classList.remove('invalid','filled-ok');
   if(!val){
     el.innerHTML = `<span class="ph">${seg==='dept'?'25':seg==='letters'?'uaz':'016'}</span>`;
@@ -561,6 +620,10 @@ function renderSegment(seg){
     if(val.length === cfg.len){
       const ok = !cfg.validSet || cfg.validSet.indexOf(val.toLowerCase()) !== -1;
       el.classList.add(ok ? 'filled-ok' : 'invalid');
+      if(ok && !wasFilledOk){
+        el.classList.add('pop');
+        setTimeout(()=>el.classList.remove('pop'), 340);
+      }
     }
   }
 }
@@ -693,7 +756,7 @@ logoFile.addEventListener('change', ()=>{
     filePreview.classList.add('show');
     const sizeKb = (f.size/1024).toFixed(0);
     if(f.type.startsWith('image/')){
-      document.getElementById('fileIcon').outerHTML = `<img id="fileIcon" src="${reader.result}">`;
+      document.getElementById('fileIcon').outerHTML = `<img id="fileIcon" class="icon" src="${reader.result}" alt="Logo preview">`;
       const img = new Image();
       img.onload = ()=>{
         fileMeta.innerHTML = `<b>${fileName}</b>${img.width}×${img.height}px · ${sizeKb} KB`;

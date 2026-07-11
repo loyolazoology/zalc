@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZALC Registration — Loyola College</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A1F3D;
+    --ink-deep:#050F1F;
+    --ink-soft:#3C4E65;
+    --gold:#C9A227;
+    --gold-deep:#9C7C15;
+    --gold-light:#E4C660;
+    --cream:#FFFFFF;
+    --parchment:#F3EFE1;
+    --parchment-deep:#E9E0C4;
+    --line:#D6CBA0;
+    --error:#B3261E;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  body{
+    text-transform:uppercase;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(10,31,61,0.06), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(201,162,39,0.10), transparent 46%),
+      var(--parchment);
+    background-attachment:fixed;
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 80px;
+  }
+
+  .ledger{ width:100%; max-width:600px; }
+
+  /* ===== Header / crest band ===== */
+  .crestband{
+    background:var(--ink-deep);
+    color:var(--cream);
+    border-radius:14px 14px 0 0;
+    padding:26px 28px 22px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    position:relative;
+    overflow:hidden;
+  }
+  .crestband::before{
+    content:"";
+    position:absolute; left:0; right:0; top:0; height:4px;
+    background:linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-light));
+  }
+  .crestband::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  .crest{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--parchment);
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.5px;
+    flex:none;
+    border:2px solid var(--gold);
+    text-align:center;
+    line-height:1.1;
+  }
+  /* Replace the .crest div with <img src="your-logo.png" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"> once the department logo is available */
+  .crest-text{position:relative;z-index:1;}
+  .assoc-name{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; line-height:1.25; margin:0; text-transform:uppercase; }
+  .dept-name{ font-size:11px; color:#C9D2E0; margin:5px 0 0; line-height:1.55; font-weight:500; letter-spacing:0.2px; text-transform:none; }
+
+  /* ===== Status bar (time + countdown) ===== */
+  .statusbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    background:var(--ink-deep);
+    color:var(--cream);
+    padding:11px 28px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:1px;
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+  .statusbar .now{ opacity:0.75; }
+  .statusbar .left{ color:var(--gold-light); font-weight:600; }
+  .statusbar .left.urgent{ color:#E4756A; }
+
+  /* ===== Card ===== */
+  .card{
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 14px 14px;
+    padding:30px 28px 34px;
+    box-shadow:0 18px 40px -20px rgba(10,31,61,0.30);
+    position:relative;
+  }
+
+  .ledger-title{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1.8px; color:var(--gold-deep); font-weight:600; margin:0 0 4px; }
+  .ledger-sub{ font-family:'Fraunces',serif; font-size:22px; font-weight:500; margin:0 0 22px; color:var(--ink); text-transform:uppercase; }
+
+  .field{ margin-bottom:24px; }
+  .field label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1.2px; color:var(--ink-soft); font-weight:600; margin-bottom:9px; }
+  .field .hint{ font-size:12px; color:var(--ink-soft); opacity:0.85; margin-top:7px; line-height:1.55; text-transform:none; }
+  .field .err{ font-size:12px; color:var(--error); margin-top:7px; display:none; font-weight:600; }
+  .field.invalid .err{display:block;}
+
+  input[type=text], input[type=tel]{
+    width:100%;
+    background:var(--parchment);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:13px 14px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    outline:none;
+    text-transform:uppercase;
+    transition:border-color .15s, background .15s;
+  }
+  input[type=text]:focus, input[type=tel]:focus{ border-color:var(--gold-deep); background:var(--cream); }
+  .field.invalid input{border-color:var(--error);}
+
+  /* ===== Department ID builder ===== */
+  .specimen-row{ display:flex; align-items:center; gap:8px; }
+  .segment{
+    flex:1; text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:19px; font-weight:600; letter-spacing:2px;
+    padding:13px 6px;
+    background:var(--parchment);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    cursor:pointer;
+    color:var(--ink);
+    user-select:none;
+    transition:border-color .15s, box-shadow .15s;
+    min-height:20px;
+  }
+  .segment.active{border-color:var(--gold-deep); box-shadow:0 0 0 3px rgba(201,162,39,0.20);}
+  .segment.invalid{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,38,30,0.12);}
+  .segment.filled-ok{border-color:var(--gold-deep); background:#FBF4DE;}
+  .segment .ph{opacity:0.35;font-weight:500;}
+  .hyphen{ font-family:'IBM Plex Mono',monospace; font-size:19px; color:var(--ink-soft); font-weight:600; }
+
+  @keyframes shake{
+    10%,90%{transform:translateX(-1px);}
+    20%,80%{transform:translateX(2px);}
+    30%,50%,70%{transform:translateX(-4px);}
+    40%,60%{transform:translateX(4px);}
+  }
+  .shake{animation:shake .4s;}
+
+  /* ===== Keypad ===== */
+  .keypad-wrap{ max-height:0; overflow:hidden; transition:max-height .22s ease; }
+  .keypad-wrap.open{max-height:220px; margin-top:10px;}
+  .keypad{
+    display:flex; flex-wrap:wrap; gap:7px;
+    background:var(--parchment-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px;
+  }
+  .key{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600; font-size:15px;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:10px 0; width:42px;
+    text-align:center; cursor:pointer;
+    color:var(--ink);
+    box-shadow:0 2px 0 var(--line);
+    transition:transform .05s, box-shadow .05s;
+  }
+  .key:active{transform:translateY(2px); box-shadow:0 0 0 var(--line);}
+  .key.wide{width:auto; flex:1; min-width:70px; font-size:11px; letter-spacing:0.5px; color:var(--ink);}
+
+  /* ===== Auto-generated email ===== */
+  .autogen{
+    width:100%;
+    background:#EFE7CB;
+    border:1.5px dashed var(--line);
+    border-radius:8px;
+    padding:13px 14px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+  .autogen.ready{color:var(--ink); border-style:solid; border-color:var(--gold-deep);}
+
+  /* ===== Divider ===== */
+  .divider{ display:flex; align-items:center; gap:10px; margin:30px 0 22px; }
+  .divider .line{flex:1; height:1px; background:var(--line);}
+  .divider span{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:1.6px; color:var(--gold-deep); font-weight:600; white-space:nowrap; }
+
+  /* ===== File upload ===== */
+  .dropzone{
+    border:1.5px dashed var(--line);
+    border-radius:10px;
+    background:var(--parchment);
+    padding:22px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .dropzone:hover{border-color:var(--gold-deep);}
+  .dropzone.has-file{border-style:solid; border-color:var(--gold-deep); background:var(--cream);}
+  .dropzone-label{font-size:13px; color:var(--ink-soft); font-weight:500;}
+  .dropzone-label b{color:var(--ink);}
+  .file-preview{
+    display:none; align-items:center; gap:12px; margin-top:14px; text-align:left;
+    background:var(--cream); border:1px solid var(--line); border-radius:8px; padding:10px;
+  }
+  .file-preview.show{display:flex;}
+  .file-preview img{width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--line);}
+  .file-preview .icon{
+    width:52px;height:52px;border-radius:6px;background:var(--parchment-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:var(--ink);
+    flex:none;
+  }
+  .file-preview .meta{font-size:12px; color:var(--ink-soft); line-height:1.5; text-transform:none;}
+  .file-preview .meta b{color:var(--ink); display:block; font-size:13px;}
+
+  /* ===== Submit ===== */
+  .submit-btn{
+    width:100%;
+    background:var(--ink);
+    color:var(--cream);
+    border:none;
+    border-radius:9px;
+    padding:16px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    letter-spacing:1.5px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:6px;
+    transition:background .15s, transform .1s, opacity .15s;
+  }
+  .submit-btn:hover:not(:disabled){background:var(--ink-deep);}
+  .submit-btn:active:not(:disabled){transform:translateY(1px);}
+  .submit-btn:disabled{opacity:0.4; cursor:not-allowed;}
+
+  .form-error{ font-size:12px; color:var(--error); text-align:center; margin-top:12px; display:none; }
+
+  /* ===== Success ===== */
+  .success{ display:none; text-align:center; padding:20px 10px 6px; }
+  .success.show{display:block;}
+  .stamp{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600; font-size:15px; letter-spacing:2px;
+    color:var(--gold-deep);
+    border:3px solid var(--gold-deep);
+    border-radius:8px;
+    padding:10px 18px;
+    transform:rotate(-8deg) scale(0);
+    animation:stampIn .5s cubic-bezier(.34,1.56,.64,1) forwards .1s;
+  }
+  @keyframes stampIn{ to{transform:rotate(-8deg) scale(1);} }
+  .success h3{ font-family:'Fraunces',serif; font-weight:500; font-size:21px; margin:20px 0 8px; text-transform:uppercase; }
+  .success p{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+  .success .sid{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;}
+
+  /* ===== Closed state ===== */
+  .closed{ display:none; text-align:center; padding:30px 10px 10px; }
+  .closed.show{display:block;}
+  .closed .badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px; letter-spacing:2px; font-weight:600;
+    color:var(--gold-light); background:var(--ink-deep);
+    border-radius:8px; padding:9px 16px;
+  }
+  .closed h3{ font-family:'Fraunces',serif; font-size:21px; font-weight:500; margin:18px 0 8px; }
+  .closed p{ font-size:13px; color:var(--ink-soft); line-height:1.7; text-transform:none; }
+
+  .footer-note{ text-align:center; font-size:11px; color:var(--ink-soft); opacity:0.7; margin-top:18px; line-height:1.6; }
+
+  /* ===== Welcome modal ===== */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(5,15,31,0.62);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:50;
+    backdrop-filter:blur(2px);
+  }
+  .modal{
+    background:var(--cream);
+    border-radius:14px;
+    max-width:440px; width:100%;
+    padding:30px 28px 26px;
+    box-shadow:0 30px 60px -20px rgba(5,15,31,0.5);
+    border-top:5px solid var(--gold);
+    position:relative;
+    animation:modalIn .35s cubic-bezier(.2,.9,.3,1);
+  }
+  @keyframes modalIn{ from{opacity:0; transform:translateY(14px) scale(.98);} to{opacity:1; transform:translateY(0) scale(1);} }
+  .modal .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:2px; color:var(--gold-deep); font-weight:600; margin:0 0 10px; }
+  .modal h2{ font-family:'Fraunces',serif; font-size:24px; font-weight:600; margin:0 0 14px; color:var(--ink); }
+  .modal p{ font-size:14px; line-height:1.7; color:var(--ink-soft); margin:0 0 8px; text-transform:none; }
+  .modal .deadline-box{
+    margin:16px 0 20px;
+    background:var(--parchment);
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    padding:13px 15px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink);
+    font-weight:600;
+    text-align:center;
+  }
+  .modal-next{
+    width:100%; background:var(--ink); color:var(--cream); border:none;
+    border-radius:9px; padding:15px; font-family:'IBM Plex Mono',monospace;
+    font-size:13px; letter-spacing:1.5px; font-weight:600; cursor:pointer;
+  }
+  .modal-next:hover{background:var(--ink-deep);}
+
+  @media (max-width:420px){
+    .segment{font-size:16px;}
+    .key{width:36px;padding:9px 0;font-size:14px;}
+    .statusbar{flex-direction:column; align-items:flex-start; gap:3px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Welcome / deadline modal ===== -->
+<div class="modal-backdrop" id="welcomeModal">
+  <div class="modal">
+    <p class="eyebrow">Zoologist Association of Loyola College</p>
+    <h2 id="modalHeading">Welcome</h2>
+    <p id="modalBody">Kindly submit your name and designed logo on or before <b>Monday morning, 8:00 AM</b>.</p>
+    <div class="deadline-box" id="modalDeadlineBox">Form closes Monday · 8:00 AM</div>
+    <button class="modal-next" id="modalNextBtn">Next</button>
+  </div>
+</div>
+
+<div class="ledger">
+
+  <div class="crestband">
+    <div class="crest"><span class="crest-text">AZB</span></div>
+    <!-- Replace the .crest div above with your department logo image once available -->
+    <div>
+      <p class="assoc-name">Zoologist Association of Loyola College</p>
+      <p class="dept-name">PG &amp; Research Department of Advanced Zoology and Biotechnology<br>Loyola College (Autonomous), Chennai&nbsp;–&nbsp;34</p>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span class="now" id="nowClock">—</span>
+    <span class="left" id="timeLeft">—</span>
+  </div>
+
+  <div class="card">
+
+    <form id="regForm">
+      <p class="ledger-title">Field Registration</p>
+      <h2 class="ledger-sub">Enter your details below</h2>
+
+      <!-- DEPARTMENT ID -->
+      <div class="field" id="field-id">
+        <label>Department ID</label>
+        <div class="specimen-row">
+          <div class="segment" data-seg="dept" tabindex="0"><span class="ph">25</span></div>
+          <span class="hyphen">–</span>
+          <div class="segment" data-seg="letters" tabindex="0"><span class="ph">uaz</span></div>
+          <span class="hyphen">–</span>
+          <div class="segment" data-seg="serial" tabindex="0"><span class="ph">016</span></div>
+        </div>
+        <div class="keypad-wrap" id="keypad-wrap"><div class="keypad" id="keypad"></div></div>
+        <p class="err" id="err-id">That combination isn't valid.</p>
+      </div>
+
+      <!-- NAME -->
+      <div class="field" id="field-name">
+        <label>Registered Name</label>
+        <input type="text" id="name" autocomplete="name" placeholder="As per college records">
+      </div>
+
+      <!-- AUTO EMAIL -->
+      <div class="field">
+        <label>College Email <span style="opacity:.6;font-weight:500;">(auto-generated)</span></label>
+        <div class="autogen" id="autoEmail">Complete the Department ID above</div>
+      </div>
+
+      <!-- MOBILE -->
+      <div class="field" id="field-mobile">
+        <label>Contact Number</label>
+        <input type="tel" id="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+        <p class="err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
+      </div>
+
+      <div class="divider"><div class="line"></div><span>Name &amp; Logo Proposal</span><div class="line"></div></div>
+
+      <!-- ZALC NAME -->
+      <div class="field" id="field-zalc">
+        <label>Proposed Name for ZALC <span style="opacity:.6;font-weight:500;">(mammal theme)</span></label>
+        <input type="text" id="zalcName" placeholder="e.g. Clouded Leopard, Sable Antelope, Slender Loris">
+      </div>
+
+      <!-- LOGO UPLOAD -->
+      <div class="field" id="field-logo">
+        <label>Logo Design Proposal</label>
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-label"><b>Tap to upload</b> a PDF or image (JPG/PNG)</div>
+          <input type="file" id="logoFile" accept="application/pdf,image/png,image/jpeg" style="display:none;">
+        </div>
+        <div class="file-preview" id="filePreview">
+          <div class="icon" id="fileIcon">FILE</div>
+          <div class="meta" id="fileMeta"></div>
+        </div>
+        <p class="hint">Max size 10&nbsp;MB. For images, aim for at least 1000×1000&nbsp;px so the design stays crisp.</p>
+        <p class="err" id="err-logo">File is too large or an unsupported type.</p>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Registration</button>
+      <p class="form-error" id="formError"></p>
+    </form>
+
+    <div class="success" id="success">
+      <div class="stamp">✓ Registered</div>
+      <h3>Thank you.</h3>
+      <p>Your entry has been recorded under <span class="sid" id="successId"></span>.<br>A confirmation has been sent to <span class="sid" id="successEmail"></span>.</p>
+    </div>
+
+    <div class="closed" id="closedState">
+      <span class="badge">Registrations Closed</span>
+      <h3>The window has ended.</h3>
+      <p>Submissions closed Monday at 8:00&nbsp;AM. Please reach out to the association if you still need to submit your name and logo.</p>
+    </div>
+
+  </div>
+
+  <p class="footer-note">Zoologist Association of Loyola College · PG &amp; Research Dept. of Advanced Zoology &amp; Biotechnology</p>
+</div>
+
+<script>
+/* ============ CONFIG ============ */
+const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const EMAIL_DOMAIN = "loyolacollege.edu";
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+// Deadline: nearest upcoming Monday, 8:00 AM IST. Change this if the date/timezone is wrong.
+const DEADLINE = new Date("2026-07-13T08:00:00+05:30");
+
+/* ============ WELCOME MODAL + DEADLINE ============ */
+const welcomeModal = document.getElementById('welcomeModal');
+const modalHeading = document.getElementById('modalHeading');
+const modalBody = document.getElementById('modalBody');
+const modalDeadlineBox = document.getElementById('modalDeadlineBox');
+const modalNextBtn = document.getElementById('modalNextBtn');
+const nowClockEl = document.getElementById('nowClock');
+const timeLeftEl = document.getElementById('timeLeft');
+const regForm = document.getElementById('regForm');
+const closedState = document.getElementById('closedState');
+const successState = document.getElementById('success');
+
+const deadlineLabel = DEADLINE.toLocaleString('en-IN', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+
+function isClosed(){ return Date.now() >= DEADLINE.getTime(); }
+
+function setupModal(){
+  if(isClosed()){
+    modalHeading.textContent = 'Registrations Closed';
+    modalBody.innerHTML = 'The submission window ended on <b>' + deadlineLabel + '</b>.';
+    modalDeadlineBox.textContent = 'Closed · ' + deadlineLabel;
+    modalNextBtn.textContent = 'View Page';
+  } else {
+    modalBody.innerHTML = 'Kindly submit your name and designed logo on or before <b>' + deadlineLabel + '</b>.';
+    modalDeadlineBox.textContent = 'Form closes ' + deadlineLabel;
+  }
+}
+setupModal();
+
+modalNextBtn.addEventListener('click', ()=>{
+  welcomeModal.style.display = 'none';
+  refreshClosedUI();
+});
+
+function refreshClosedUI(){
+  if(isClosed()){
+    regForm.style.display = 'none';
+    successState.classList.remove('show');
+    closedState.classList.add('show');
+  }
+}
+
+function tickClock(){
+  const now = new Date();
+  nowClockEl.textContent = now.toLocaleString('en-IN', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+
+  const diff = DEADLINE.getTime() - now.getTime();
+  if(diff <= 0){
+    timeLeftEl.textContent = 'Closed';
+    timeLeftEl.classList.add('urgent');
+    refreshClosedUI();
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  timeLeftEl.textContent = (d>0 ? d+'D ' : '') + String(h).padStart(2,'0')+'H ' + String(m).padStart(2,'0')+'M ' + String(s).padStart(2,'0')+'S LEFT';
+  if(diff < 3600000) timeLeftEl.classList.add('urgent'); else timeLeftEl.classList.remove('urgent');
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+/* ============ DEPARTMENT ID BUILDER ============ */
+const SEG_CONFIG = {
+  dept:    { len: 2, keys: ['2','4','5','6'], validSet: ['24','25','26'] },
+  letters: { len: 3, keys: ['U','A','Z','P','O'], validSet: ['uaz','pzo'] },
+  serial:  { len: 3, keys: ['0','1','2','3','4','5','6','7','8','9'], validSet: null }
+};
+const segValues = { dept:'', letters:'', serial:'' };
+let activeSeg = null;
+
+const segEls = {
+  dept: document.querySelector('[data-seg="dept"]'),
+  letters: document.querySelector('[data-seg="letters"]'),
+  serial: document.querySelector('[data-seg="serial"]')
+};
+const keypadWrap = document.getElementById('keypad-wrap');
+const keypadEl = document.getElementById('keypad');
+const fieldId = document.getElementById('field-id');
+
+function renderSegment(seg){
+  const el = segEls[seg];
+  const val = segValues[seg];
+  const cfg = SEG_CONFIG[seg];
+  el.classList.remove('invalid','filled-ok');
+  if(!val){
+    el.innerHTML = `<span class="ph">${seg==='dept'?'25':seg==='letters'?'uaz':'016'}</span>`;
+  } else {
+    el.textContent = val;
+    if(val.length === cfg.len){
+      const ok = !cfg.validSet || cfg.validSet.indexOf(val.toLowerCase()) !== -1;
+      el.classList.add(ok ? 'filled-ok' : 'invalid');
+    }
+  }
+}
+
+function openKeypad(seg){
+  activeSeg = seg;
+  Object.values(segEls).forEach(e=>e.classList.remove('active'));
+  segEls[seg].classList.add('active');
+  const cfg = SEG_CONFIG[seg];
+  keypadEl.innerHTML = '';
+  cfg.keys.forEach(k=>{
+    const b = document.createElement('div');
+    b.className = 'key';
+    b.textContent = k;
+    b.addEventListener('click', ()=>pressKey(seg,k));
+    keypadEl.appendChild(b);
+  });
+  const back = document.createElement('div');
+  back.className = 'key wide';
+  back.textContent = '⌫ Back';
+  back.addEventListener('click', ()=>backspace(seg));
+  keypadEl.appendChild(back);
+  keypadWrap.classList.add('open');
+}
+
+function pressKey(seg,k){
+  const cfg = SEG_CONFIG[seg];
+  if(segValues[seg].length >= cfg.len) return;
+  segValues[seg] += (seg==='letters' ? k.toLowerCase() : k);
+  renderSegment(seg);
+  if(segValues[seg].length === cfg.len){
+    const ok = !cfg.validSet || cfg.validSet.indexOf(segValues[seg].toLowerCase()) !== -1;
+    if(!ok){
+      segEls[seg].classList.add('shake');
+      setTimeout(()=>segEls[seg].classList.remove('shake'),400);
+    } else {
+      const order = ['dept','letters','serial'];
+      const next = order[order.indexOf(seg)+1];
+      if(next) openKeypad(next); else keypadWrap.classList.remove('open');
+    }
+  }
+  updateIdState();
+}
+
+function backspace(seg){
+  segValues[seg] = segValues[seg].slice(0,-1);
+  renderSegment(seg);
+  updateIdState();
+}
+
+['dept','letters','serial'].forEach(seg=>{
+  segEls[seg].addEventListener('click', ()=>openKeypad(seg));
+  segEls[seg].addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') openKeypad(seg); });
+});
+
+const autoEmailEl = document.getElementById('autoEmail');
+
+function updateIdState(){
+  const deptCfg = SEG_CONFIG.dept, letCfg = SEG_CONFIG.letters, serCfg = SEG_CONFIG.serial;
+  const deptOk = segValues.dept.length===deptCfg.len && deptCfg.validSet.includes(segValues.dept);
+  const letOk = segValues.letters.length===letCfg.len && letCfg.validSet.includes(segValues.letters);
+  const serOk = segValues.serial.length===serCfg.len;
+  const allOk = deptOk && letOk && serOk;
+
+  const anyFilledInvalid =
+    (segValues.dept.length===deptCfg.len && !deptOk) ||
+    (segValues.letters.length===letCfg.len && !letOk);
+  fieldId.classList.toggle('invalid', anyFilledInvalid);
+
+  if(allOk){
+    const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
+    autoEmailEl.textContent = email;
+    autoEmailEl.classList.add('ready');
+  } else {
+    autoEmailEl.textContent = 'Complete the Department ID above';
+    autoEmailEl.classList.remove('ready');
+  }
+  validateForm();
+}
+
+/* ============ NAME / MOBILE / ZALC — force real uppercase values ============ */
+const nameInput = document.getElementById('name');
+const mobileInput = document.getElementById('mobile');
+const fieldMobile = document.getElementById('field-mobile');
+const zalcInput = document.getElementById('zalcName');
+
+function forceUppercase(input){
+  input.addEventListener('input', ()=>{
+    const pos = input.selectionStart;
+    input.value = input.value.toUpperCase();
+    input.setSelectionRange(pos, pos);
+    validateForm();
+  });
+}
+forceUppercase(nameInput);
+forceUppercase(zalcInput);
+
+mobileInput.addEventListener('input', ()=>{
+  mobileInput.value = mobileInput.value.replace(/\D/g,'').slice(0,10);
+  validateForm();
+});
+
+/* ============ FILE UPLOAD ============ */
+const dropzone = document.getElementById('dropzone');
+const logoFile = document.getElementById('logoFile');
+const filePreview = document.getElementById('filePreview');
+const fileMeta = document.getElementById('fileMeta');
+const fieldLogo = document.getElementById('field-logo');
+let fileBase64 = null, fileMime = null, fileName = null;
+
+dropzone.addEventListener('click', ()=>logoFile.click());
+
+logoFile.addEventListener('change', ()=>{
+  const f = logoFile.files[0];
+  fieldLogo.classList.remove('invalid');
+  if(!f) return;
+  const allowed = ['application/pdf','image/png','image/jpeg'];
+  if(!allowed.includes(f.type) || f.size > MAX_FILE_BYTES){
+    fieldLogo.classList.add('invalid');
+    filePreview.classList.remove('show');
+    fileBase64 = null;
+    validateForm();
+    return;
+  }
+  fileName = f.name; fileMime = f.type;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    fileBase64 = reader.result.split(',')[1];
+    dropzone.classList.add('has-file');
+    filePreview.classList.add('show');
+    const sizeKb = (f.size/1024).toFixed(0);
+    if(f.type.startsWith('image/')){
+      document.getElementById('fileIcon').outerHTML = `<img id="fileIcon" src="${reader.result}">`;
+      const img = new Image();
+      img.onload = ()=>{
+        fileMeta.innerHTML = `<b>${fileName}</b>${img.width}×${img.height}px · ${sizeKb} KB`;
+      };
+      img.src = reader.result;
+    } else {
+      document.getElementById('fileIcon').outerHTML = `<div class="icon" id="fileIcon">PDF</div>`;
+      fileMeta.innerHTML = `<b>${fileName}</b>${sizeKb} KB`;
+    }
+    validateForm();
+  };
+  reader.readAsDataURL(f);
+});
+
+/* ============ VALIDATION ============ */
+const submitBtn = document.getElementById('submitBtn');
+function validateForm(){
+  const idOk = segValues.dept.length===2 && SEG_CONFIG.dept.validSet.includes(segValues.dept)
+            && segValues.letters.length===3 && SEG_CONFIG.letters.validSet.includes(segValues.letters)
+            && segValues.serial.length===3;
+  const nameOk = nameInput.value.trim().length > 1;
+  const mobileOk = /^[6-9]\d{9}$/.test(mobileInput.value);
+  fieldMobile.classList.toggle('invalid', mobileInput.value.length===10 && !mobileOk);
+  const zalcOk = zalcInput.value.trim().length > 1;
+  const fileOk = !!fileBase64;
+  submitBtn.disabled = !(idOk && nameOk && mobileOk && zalcOk && fileOk) || isClosed();
+}
+
+/* ============ SUBMIT ============ */
+const formError = document.getElementById('formError');
+
+regForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(submitBtn.disabled) return;
+  if(isClosed()){ refreshClosedUI(); return; }
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting…';
+  formError.style.display = 'none';
+
+  const specimenId = `${segValues.dept}-${segValues.letters}-${segValues.serial}`;
+  const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
+
+  const payload = {
+    specimenId, name: nameInput.value.trim(), email,
+    mobile: mobileInput.value, zalcName: zalcInput.value.trim(),
+    fileName, fileMimeType: fileMime, fileData: fileBase64
+  };
+
+  if(APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
+    formError.textContent = 'This form is not yet connected — paste your Apps Script Web App URL into APPS_SCRIPT_URL.';
+    formError.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Registration';
+    return;
+  }
+
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('successId').textContent = specimenId;
+    document.getElementById('successEmail').textContent = email;
+    regForm.style.display = 'none';
+    successState.classList.add('show');
+  } catch(err){
+    formError.textContent = 'Something went wrong sending your registration. Please check your connection and try again.';
+    formError.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Registration';
+  }
+});
+</script>
+</body>
+</html>

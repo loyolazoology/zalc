@@ -693,7 +693,9 @@ async function runDuplicateCheck(specimenId){
   let result;
   try{
     result = await checkRegistrationStatus(specimenId);
+    console.log('[ZALC duplicate check] id=' + specimenId + ' response=', result);
   } catch(err){
+    console.warn('[ZALC duplicate check] id=' + specimenId + ' FAILED (network/permission issue):', err);
     if(token !== idCheckToken) return;
     fieldId.classList.remove('checking');
     setIdStatus('warn', "Couldn't verify right now — check your connection. You may continue, but a duplicate ID will still be rejected when you submit.");
@@ -1127,6 +1129,7 @@ regForm.addEventListener('submit', async (e)=>{
       body: JSON.stringify(payload)
     });
     const text = (await resp.text()).trim();
+    console.log('[ZALC submit] doPost response =', text);
 
     if(text === 'ok'){
       document.getElementById('successId').textContent = specimenId;

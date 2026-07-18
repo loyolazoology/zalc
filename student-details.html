@@ -1,1 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A1F3D; --ink-deep:#050F1F; --ink-soft:#3C4E65;
+    --gold:#C9A227; --gold-deep:#9C7C15; --gold-light:#E4C660;
+    --cream:#FFFFFF; --parchment:#F3EFE1; --parchment-deep:#E9E0C4;
+    --line:#D6CBA0; --error:#B3261E; --ok:#3E6B2C; --ok-bg:#EAF3E4;
+    --ok-line:#C7DEB8; --warn-bg:#FBF0D9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  body{
+    background:radial-gradient(circle at 12% 8%, rgba(10,31,61,0.06), transparent 42%),
+               radial-gradient(circle at 88% 92%, rgba(201,162,39,0.10), transparent 46%),
+               var(--parchment);
+    background-attachment:fixed;
+    font-family:'Inter', sans-serif; color:var(--ink); min-height:100vh;
+    display:flex; justify-content:center;
+    padding:clamp(16px,5vw,32px) clamp(12px,4vw,16px) clamp(48px,10vw,80px);
+  }
+  .ledger{width:100%; max-width:600px;}
+  @keyframes riseIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fieldIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .crestband{animation:riseIn .6s cubic-bezier(.2,.8,.3,1) both;}
+  .card{animation:riseIn .6s cubic-bezier(.2,.8,.3,1) .1s both;}
+  .crestband{
+    background:var(--ink-deep); color:var(--cream); border-radius:14px 14px 0 0;
+    padding:clamp(18px,4vw,26px) clamp(18px,5vw,28px) clamp(16px,3.5vw,22px);
+    display:flex; align-items:center; gap:16px; position:relative; overflow:hidden;
+  }
+  .crestband::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;
+    background:linear-gradient(90deg,var(--gold-deep),var(--gold),var(--gold-light));}
+  .crest{
+    width:clamp(46px,12vw,56px); height:clamp(46px,12vw,56px); border-radius:10px;
+    background:var(--parchment); color:var(--ink); display:flex;align-items:center;justify-content:center;
+    flex:none; border:1.5px solid var(--gold); padding:6px; position:relative; z-index:1;
+    box-shadow:0 4px 14px -6px rgba(0,0,0,0.5); overflow:hidden;
+  }
+  .crest img{width:100%;height:100%;object-fit:contain;border-radius:4px;display:block;}
+  .assoc-name{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(16px,4.4vw,19px);line-height:1.25;margin:0;position:relative;z-index:1;}
+  .dept-name{font-size:11px;color:#C9D2E0;margin:5px 0 0;line-height:1.55;font-weight:500;text-transform:none;position:relative;z-index:1;}
+  .statusbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink-deep);color:var(--cream);
+    padding:11px clamp(18px,5vw,28px);font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:1px;border-top:1px solid rgba(255,255,255,0.08);text-transform:uppercase;}
+  .statusbar .now{opacity:0.75;}
+  .statusbar .left{color:var(--gold-light);font-weight:600;transition:color .25s ease;}
+  .statusbar .left.urgent{color:#E4756A;animation:pulseUrgent 1.4s ease-in-out infinite;}
+  @keyframes pulseUrgent{0%,100%{opacity:1;}50%{opacity:.55;}}
+  .card{background:var(--cream);border:1px solid var(--line);border-top:none;border-radius:0 0 14px 14px;
+    padding:clamp(22px,5vw,30px) clamp(18px,5vw,28px) clamp(26px,6vw,34px);box-shadow:0 18px 40px -20px rgba(10,31,61,0.30);position:relative;}
+  .ledger-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.8px;color:var(--gold-deep);font-weight:600;margin:0 0 4px;text-transform:uppercase;}
+  .ledger-sub{font-family:'Fraunces',serif;font-size:clamp(19px,5vw,22px);font-weight:500;margin:0 0 22px;color:var(--ink);}
+  .field{margin-bottom:24px;}
+  .field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;color:var(--ink-soft);font-weight:600;margin-bottom:9px;text-transform:uppercase;}
+  .field .hint{font-size:12px;color:var(--ink-soft);opacity:0.85;margin-top:7px;line-height:1.55;text-transform:none;}
+  .field .err{font-size:12px;color:var(--error);margin-top:7px;display:none;font-weight:600;}
+  .field.invalid .err{display:block;animation:fieldIn .25s ease both;}
+  input[type=text],input[type=tel],input[type=date],textarea,select{
+    width:100%;background:var(--parchment);border:1.5px solid var(--line);border-radius:8px;padding:13px 14px;
+    font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);outline:none;
+    transition:border-color .15s,background .15s,box-shadow .15s;
+  }
+  textarea{resize:vertical;min-height:70px;}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%233C4E65' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+  input:focus,textarea:focus,select:focus{border-color:var(--gold-deep);background:var(--cream);box-shadow:0 0 0 3px rgba(201,162,39,0.15);}
+  .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--error);}
+  .specimen-row{display:flex;align-items:center;gap:8px;}
+  .segment{flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;letter-spacing:2px;padding:13px 6px;
+    background:var(--parchment);border:1.5px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink);user-select:none;text-transform:uppercase;
+    transition:border-color .15s,box-shadow .15s,transform .15s;min-height:20px;}
+  .segment.active{border-color:var(--gold-deep);box-shadow:0 0 0 3px rgba(201,162,39,0.20);}
+  .segment.invalid{border-color:var(--error);box-shadow:0 0 0 3px rgba(179,38,30,0.12);}
+  .segment.filled-ok{border-color:var(--gold-deep);background:#FBF4DE;}
+  .segment.pop{animation:segPop .32s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes segPop{0%{transform:scale(1);}45%{transform:scale(1.08);}100%{transform:scale(1);}}
+  .segment .ph{opacity:0.35;font-weight:500;}
+  .hyphen{font-family:'IBM Plex Mono',monospace;font-size:19px;color:var(--ink-soft);font-weight:600;}
+  @keyframes shake{10%,90%{transform:translateX(-1px);}20%,80%{transform:translateX(2px);}30%,50%,70%{transform:translateX(-4px);}40%,60%{transform:translateX(4px);}}
+  .shake{animation:shake .4s;}
+  .keypad-wrap{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .keypad-wrap.open{max-height:220px;margin-top:10px;}
+  .keypad{display:flex;flex-wrap:wrap;gap:7px;background:var(--parchment-deep);border:1px solid var(--line);border-radius:10px;padding:10px;}
+  .key{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;background:var(--cream);border:1px solid var(--line);border-radius:6px;
+    padding:10px 0;width:42px;text-align:center;cursor:pointer;color:var(--ink);box-shadow:0 2px 0 var(--line);transition:transform .05s,box-shadow .05s,background .15s;text-transform:uppercase;}
+  .key:hover{background:var(--parchment);}
+  .key:active{transform:translateY(2px);box-shadow:0 0 0 var(--line);}
+  .key.wide{width:auto;flex:1;min-width:70px;font-size:11px;letter-spacing:0.5px;color:var(--ink);}
+  .id-status{display:none;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;border-radius:8px;font-size:12px;font-weight:600;line-height:1.55;text-transform:none;letter-spacing:0.2px;}
+  .id-status.checking{display:flex;background:var(--parchment-deep);color:var(--ink-soft);}
+  .id-status.ok{display:flex;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-line);}
+  .id-status.warn{display:flex;background:var(--warn-bg);color:var(--gold-deep);border:1px solid var(--line);}
+  .loading-dots{display:inline-flex;gap:5px;align-items:center;flex:none;}
+  .loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);animation:dotBounce 1s ease-in-out infinite;}
+  .loading-dots span:nth-child(2){animation-delay:.15s;}
+  .loading-dots span:nth-child(3){animation-delay:.3s;}
+  @keyframes dotBounce{0%,80%,100%{transform:translateY(0);opacity:.35;}40%{transform:translateY(-5px);opacity:1;}}
+  #field-id.checking .segment.filled-ok{animation:idPulse 1.1s ease-in-out infinite;}
+  @keyframes idPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,0.22);}50%{box-shadow:0 0 0 5px rgba(201,162,39,0.12);}}
+  .gated-fields{display:none;}
+  .gated-fields.revealed{display:block;animation:riseIn .45s cubic-bezier(.2,.8,.3,1) both;}
+  .autogen{width:100%;background:#EFE7CB;border:1.5px dashed var(--line);border-radius:8px;padding:13px 14px;
+    font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink-soft);word-break:break-all;transition:border-color .2s,background .2s,color .2s;}
+  .autogen.ready{color:var(--ink);border-style:solid;border-color:var(--gold-deep);background:#FBF4DE;text-transform:lowercase;}
+  .divider{display:flex;align-items:center;gap:10px;margin:30px 0 22px;}
+  .divider .line{flex:1;height:1px;background:var(--line);}
+  .divider span{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;color:var(--gold-deep);font-weight:600;white-space:nowrap;text-transform:uppercase;}
+  .toggle-group{display:flex;gap:10px;}
+  .toggle-btn{flex:1;padding:13px 8px;text-align:center;border-radius:8px;border:1.5px solid var(--line);background:var(--parchment);
+    cursor:pointer;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;letter-spacing:1px;color:var(--ink-soft);transition:all .15s;text-transform:uppercase;}
+  .toggle-btn.selected{border-color:var(--gold-deep);background:#FBF4DE;color:var(--ink);box-shadow:0 0 0 3px rgba(201,162,39,0.15);}
+  .subfields{display:none;margin-top:16px;}
+  .subfields.open{display:block;animation:fieldIn .35s ease both;}
+  .two-col{display:flex; gap:12px;}
+  .two-col > div{flex:1;}
+  .dropzone{border:1.5px dashed var(--line);border-radius:10px;background:var(--parchment);padding:22px 16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;}
+  .dropzone:hover{border-color:var(--gold-deep);transform:translateY(-1px);}
+  .dropzone.has-file{border-style:solid;border-color:var(--gold-deep);background:var(--cream);}
+  .dropzone-label{font-size:13px;color:var(--ink-soft);font-weight:500;}
+  .dropzone-label b{color:var(--ink);}
+  .file-preview{display:none;align-items:center;gap:12px;margin-top:14px;text-align:left;background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:10px;}
+  .file-preview.show{display:flex;animation:fieldIn .3s ease both;}
+  .file-preview img.icon{width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--line);flex:none;background:none;}
+  .file-preview .meta{font-size:12px;color:var(--ink-soft);line-height:1.5;text-transform:none;min-width:0;word-break:break-word;}
+  .file-preview .meta b{color:var(--ink);display:block;font-size:13px;word-break:break-all;}
+  .submit-btn{width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:9px;padding:16px;font-family:'IBM Plex Mono',monospace;
+    font-size:13px;letter-spacing:1.5px;font-weight:600;cursor:pointer;margin-top:6px;text-transform:uppercase;transition:background .15s,transform .1s,opacity .15s,box-shadow .15s;}
+  .submit-btn:hover:not(:disabled){background:var(--ink-deep);box-shadow:0 10px 24px -12px rgba(10,31,61,0.5);transform:translateY(-1px);}
+  .submit-btn:active:not(:disabled){transform:translateY(1px);box-shadow:none;}
+  .submit-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .form-error{font-size:12px;color:var(--error);text-align:center;margin-top:12px;display:none;}
+  .success{display:none;text-align:center;padding:20px 10px 6px;}
+  .success.show{display:block;animation:riseIn .4s ease both;}
+  .stamp{display:inline-block;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;letter-spacing:2px;color:var(--gold-deep);
+    border:3px solid var(--gold-deep);border-radius:8px;padding:10px 18px;text-transform:uppercase;transform:rotate(-8deg) scale(0);animation:stampIn .5s cubic-bezier(.34,1.56,.64,1) forwards .1s;}
+  @keyframes stampIn{to{transform:rotate(-8deg) scale(1);}}
+  .success h3{font-family:'Fraunces',serif;font-weight:500;font-size:21px;margin:20px 0 8px;}
+  .success p{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+  .success .sid{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;text-transform:uppercase;}
+  .already{display:none;text-align:center;padding:20px 10px 6px;}
+  .already.show{display:block;animation:riseIn .4s ease both;}
+  .already .stamp{color:var(--gold-deep);border-color:var(--gold-deep);}
+  .already h3{font-family:'Fraunces',serif;font-weight:500;font-size:21px;margin:20px 0 8px;}
+  .already p{font-size:13px;color:var(--ink-soft);line-height:1.7;}
+  .already .sid{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;text-transform:uppercase;}
+  .already-reset{margin-top:18px;background:none;border:none;padding:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;
+    color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-transform:uppercase;transition:color .15s;}
+  .already-reset:hover{color:var(--ink);}
+  .closed{display:none;text-align:center;padding:30px 10px 10px;}
+  .closed.show{display:block;animation:riseIn .4s ease both;}
+  .closed .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2px;font-weight:600;color:var(--gold-light);background:var(--ink-deep);border-radius:8px;padding:9px 16px;text-transform:uppercase;}
+  .closed h3{font-family:'Fraunces',serif;font-size:21px;font-weight:500;margin:18px 0 8px;}
+  .closed p{font-size:13px;color:var(--ink-soft);line-height:1.7;text-transform:none;}
+  .footer-note{text-align:center;font-size:11px;color:var(--ink-soft);opacity:0.7;margin-top:18px;line-height:1.6;}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(5,15,31,0.62);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;backdrop-filter:blur(2px);}
+  .modal{background:var(--cream);border-radius:14px;max-width:440px;width:100%;padding:clamp(24px,6vw,30px) clamp(20px,5.5vw,28px) clamp(22px,5vw,26px);
+    box-shadow:0 30px 60px -20px rgba(5,15,31,0.5);border-top:5px solid var(--gold);position:relative;animation:modalIn .35s cubic-bezier(.2,.9,.3,1);max-height:90vh;overflow-y:auto;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .modal .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--gold-deep);font-weight:600;margin:0 0 10px;text-transform:uppercase;}
+  .modal h2{font-family:'Fraunces',serif;font-size:clamp(20px,5.5vw,24px);font-weight:600;margin:0 0 14px;color:var(--ink);}
+  .modal p{font-size:14px;line-height:1.7;color:var(--ink-soft);margin:0 0 8px;text-transform:none;}
+  .modal .deadline-box{margin:16px 0 20px;background:var(--parchment);border:1.5px solid var(--line);border-radius:9px;padding:13px 15px;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);font-weight:600;text-align:center;text-transform:uppercase;}
+  .modal-next{width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:9px;padding:15px;font-family:'IBM Plex Mono',monospace;
+    font-size:13px;letter-spacing:1.5px;font-weight:600;cursor:pointer;text-transform:uppercase;transition:background .15s,transform .1s;}
+  .modal-next:hover{background:var(--ink-deep);}
+  .modal-next:active{transform:translateY(1px);}
+  .modal-next:disabled{opacity:.5;cursor:wait;}
+  @media (max-width:480px){.crestband{gap:12px;}.assoc-name{font-size:15px;}}
+  @media (max-width:420px){.segment{font-size:16px;padding:12px 4px;}.key{width:36px;padding:9px 0;font-size:14px;}
+    .statusbar{flex-direction:column;align-items:flex-start;gap:3px;}.specimen-row{gap:6px;}.hyphen{font-size:15px;}.two-col{flex-direction:column;gap:0;}}
+  @media (max-width:360px){.crest{width:42px;height:42px;}.dept-name{font-size:10px;}.field{margin-bottom:20px;}.key{width:32px;padding:8px 0;font-size:13px;}}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}}
+</style>
+</head>
+<body>
 
+<div class="modal-backdrop" id="welcomeModal">
+  <div class="modal">
+    <p class="eyebrow" id="modalEyebrow">Loading…</p>
+    <h2 id="modalHeading">Welcome</h2>
+    <p id="modalBody">Please wait while we load the registration details…</p>
+    <div class="deadline-box" id="modalDeadlineBox">—</div>
+    <button class="modal-next" id="modalNextBtn" disabled>Next</button>
+  </div>
+</div>
+
+<div class="ledger">
+  <div class="crestband">
+    <div class="crest" id="crestBox"><img id="crestImg" src="" alt="Department crest" style="display:none;"></div>
+    <div>
+      <p class="assoc-name" id="assocName">Student Registration</p>
+      <p class="dept-name" id="deptNameLine"></p>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span class="now" id="nowClock">—</span>
+    <span class="left" id="timeLeft">—</span>
+  </div>
+
+  <div class="card">
+    <form id="regForm">
+      <p class="ledger-title">Student Details</p>
+      <h2 class="ledger-sub">Enter your details below</h2>
+
+      <!-- DEPARTMENT ID -->
+      <div class="field" id="field-id">
+        <label>Department No.</label>
+        <div class="specimen-row">
+          <div class="segment" data-seg="dept" tabindex="0"><span class="ph">25</span></div>
+          <span class="hyphen">–</span>
+          <div class="segment" data-seg="letters" tabindex="0"><span class="ph">uaz</span></div>
+          <span class="hyphen">–</span>
+          <div class="segment" data-seg="serial" tabindex="0"><span class="ph">016</span></div>
+        </div>
+        <div class="keypad-wrap" id="keypad-wrap"><div class="keypad" id="keypad"></div></div>
+        <p class="hint">UAZ = B. Sc. Advanced Zoology and Biotechnology, PZO = M.Sc. Zoology</p>
+        <div class="id-status" id="idStatus"></div>
+      </div>
+
+      <div class="gated-fields" id="gatedFields">
+
+        <div class="field" id="field-name">
+          <label>Name</label>
+          <input type="text" id="name" autocomplete="name" placeholder="Full name as per college records">
+        </div>
+
+        <div class="field" id="field-class">
+          <label>Class</label>
+          <select id="studentClass"><option value="">Select class</option></select>
+        </div>
+
+        <div class="field">
+          <label>College Email <span style="opacity:.6;font-weight:500;">(auto-generated)</span></label>
+          <div class="autogen" id="autoEmail">Complete the Department ID above</div>
+        </div>
+
+        <div class="field" id="field-mobile">
+          <label>Contact Number</label>
+          <input type="tel" id="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+          <p class="err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
+        </div>
+
+        <div class="field" id="field-dob">
+          <label>Date of Birth</label>
+          <input type="date" id="dob">
+        </div>
+
+        <div class="divider"><div class="line"></div><span>Family Details</span><div class="line"></div></div>
+
+        <div class="field" id="field-father-status">
+          <label>Father</label>
+          <div class="toggle-group">
+            <div class="toggle-btn" data-parent="father" data-val="alive">Alive</div>
+            <div class="toggle-btn" data-parent="father" data-val="notalive">Not Alive</div>
+          </div>
+          <div class="subfields" id="fatherSub">
+            <div class="field" style="margin-bottom:14px;">
+              <label>Father's Name</label>
+              <input type="text" id="fatherName" placeholder="Father's full name">
+            </div>
+            <div class="field" id="field-father-mobile" style="margin-bottom:0;">
+              <label>Father's Contact Number</label>
+              <input type="tel" id="fatherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+              <p class="err" id="err-fatherMobile">Enter a valid 10-digit mobile number.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" id="field-mother-status">
+          <label>Mother</label>
+          <div class="toggle-group">
+            <div class="toggle-btn" data-parent="mother" data-val="alive">Alive</div>
+            <div class="toggle-btn" data-parent="mother" data-val="notalive">Not Alive</div>
+          </div>
+          <div class="subfields" id="motherSub">
+            <div class="field" style="margin-bottom:14px;">
+              <label>Mother's Name</label>
+              <input type="text" id="motherName" placeholder="Mother's full name">
+            </div>
+            <div class="field" id="field-mother-mobile" style="margin-bottom:0;">
+              <label>Mother's Contact Number</label>
+              <input type="tel" id="motherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+              <p class="err" id="err-motherMobile">Enter a valid 10-digit mobile number.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" id="field-guardian" style="display:none;">
+          <label>Guardian Details</label>
+          <div class="field" style="margin-bottom:14px;">
+            <input type="text" id="guardianName" placeholder="Guardian's full name">
+          </div>
+          <div class="field" style="margin-bottom:14px;">
+            <input type="text" id="guardianRelation" placeholder="Relation to student (e.g. Uncle, Elder Brother)">
+          </div>
+          <div class="field" id="field-guardian-mobile" style="margin-bottom:0;">
+            <input type="tel" id="guardianMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+            <p class="err" id="err-guardianMobile">Enter a valid 10-digit mobile number.</p>
+          </div>
+          <p class="hint">Since both parents are recorded as not alive, please provide guardian details.</p>
+        </div>
+
+        <div class="divider"><div class="line"></div><span>Address</span><div class="line"></div></div>
+
+        <div class="field" id="field-address">
+          <label>Address</label>
+          <textarea id="address" placeholder="House no., street, area"></textarea>
+        </div>
+
+        <div class="field" id="field-pincode">
+          <label>Pincode</label>
+          <input type="text" id="pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
+          <p class="hint" id="pincodeStatus">State and district fill in automatically.</p>
+        </div>
+
+        <div class="two-col">
+          <div class="field" id="field-district">
+            <label>District</label>
+            <input type="text" id="district" placeholder="District">
+          </div>
+          <div class="field" id="field-state">
+            <label>State</label>
+            <input type="text" id="state" placeholder="State">
+          </div>
+        </div>
+
+        <div class="field" id="field-photo" style="display:none;">
+          <label>Profile Photo</label>
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-label"><b>Tap to upload</b><br>the same photo as on your Student ERP profile</div>
+            <input type="file" id="photoFile" accept="image/png,image/jpeg" style="display:none;">
+          </div>
+          <div class="file-preview" id="filePreview">
+            <img class="icon" id="fileIcon" src="" alt="">
+            <div class="meta" id="fileMeta"></div>
+          </div>
+          <p class="hint">JPG or PNG only, max <span id="maxFileLabel">10</span>&nbsp;MB.</p>
+          <p class="err" id="err-photo">File is too large or an unsupported type.</p>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Registration</button>
+        <p class="form-error" id="formError"></p>
+      </div>
+    </form>
+
+    <div class="success" id="success">
+      <div class="stamp">✓ Registered</div>
+      <h3>Thank you.</h3>
+      <p>Your entry has been recorded under <span class="sid" id="successId"></span>.<br>A confirmation has been sent to <span class="sid" id="successEmail" style="text-transform:lowercase;"></span>.</p>
+    </div>
+
+    <div class="already" id="alreadyPanel">
+      <div class="stamp">✓ Already Registered</div>
+      <h3>You're already on the list.</h3>
+      <p>Department ID <span class="sid" id="alreadyId"></span> was registered<span id="alreadyWhen"></span>. No further action is needed, and this ID can't be used to submit again.</p>
+      <button type="button" class="already-reset" id="alreadyResetBtn">Not your ID? Check a different one</button>
+    </div>
+
+    <div class="closed" id="closedState">
+      <span class="badge">Registrations Closed</span>
+      <h3>The window has ended.</h3>
+      <p>Please reach out to the association if you still need to submit your details.</p>
+    </div>
+  </div>
+
+  <p class="footer-note" id="footerNote"></p>
+</div>
+
+<script>
+/* ============ CONFIG (hardcoded here — no "Config" sheet needed anymore) ============
+   Edit these values directly whenever the deadline, deployment, or year changes. */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby9a4zF9fSI8BKr2Or6KeMUQiWl5sn5BzqN8JeYs5gad5xcPpA5-2dmAAkDqOT3SnRJJw/exec";
+
+const CONFIG = {
+  DEADLINE: "2026-07-20T08:00:00+05:30",
+  EMAIL_DOMAIN: "loyolacollege.edu",
+  ASSOC_NAME: "Zoologist Association of Loyola College (ZALC)",
+  DEPT_NAME: "PG & Research Department of Advanced Zoology and Biotechnology",
+  COLLEGE_LINE: "Loyola College (Autonomous), Chennai – 34",
+  CREST_URL: "https://static.wixstatic.com/media/81ba89_514c18d8af5e4574b4812e7d27775511~mv2.png",
+  MAX_FILE_MB: 10,
+  WELCOME_BODY: "Kindly submit your details on or before the deadline below.",
+  FIRST_YEAR_CODE: "26"
+};
+
+let DEADLINE = new Date("2099-01-01T00:00:00+05:30");
+let EMAIL_DOMAIN = "college.edu";
+let MAX_FILE_MB = 10;
+let MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
+
+function jsonpRequest(url){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'zalcCb_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+    let settled = false;
+    const cleanup = ()=>{ delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); clearTimeout(timer); };
+    window[cbName] = (result)=>{ if(settled) return; settled = true; cleanup(); resolve(result); };
+    const script = document.createElement('script');
+    script.src = url + (url.indexOf('?')>-1 ? '&' : '?') + 'callback=' + cbName;
+    script.onerror = ()=>{ if(settled) return; settled = true; cleanup(); reject(new Error('network')); };
+    const timer = setTimeout(()=>{ if(settled) return; settled = true; cleanup(); reject(new Error('timeout')); }, 8000);
+    document.body.appendChild(script);
+  });
+}
+
+function applyConfig(){
+  document.getElementById('assocName').textContent = CONFIG.ASSOC_NAME || 'Student Registration';
+  document.getElementById('deptNameLine').innerHTML = (CONFIG.DEPT_NAME || '') + (CONFIG.COLLEGE_LINE ? '<br>' + CONFIG.COLLEGE_LINE : '');
+  document.getElementById('footerNote').innerHTML = (CONFIG.ASSOC_NAME || '') + '<br>' + (CONFIG.DEPT_NAME || '');
+  const crestImg = document.getElementById('crestImg');
+  const crestBox = document.getElementById('crestBox');
+  const assoc = CONFIG.ASSOC_NAME || 'Student Registration';
+  const initials = assoc.split(/\s+/).filter(w=>w.length).slice(0,3).map(w=>w[0]).join('').toUpperCase() || 'SR';
+  function showInitialsFallback(){
+    crestImg.style.display = 'none';
+    crestBox.innerHTML = '<span style="font-family:\'IBM Plex Mono\',monospace;font-weight:600;font-size:15px;letter-spacing:1px;">' + initials + '</span>';
+  }
+  if(CONFIG.CREST_URL){
+    crestImg.onload = ()=>{ crestImg.style.display = 'block'; };
+    crestImg.onerror = showInitialsFallback;
+    crestImg.src = CONFIG.CREST_URL;
+  } else {
+    showInitialsFallback();
+  }
+  EMAIL_DOMAIN = CONFIG.EMAIL_DOMAIN || EMAIL_DOMAIN;
+  if(CONFIG.DEADLINE){
+    const d = new Date(CONFIG.DEADLINE);
+    if(!isNaN(d.getTime())) DEADLINE = d;
+  }
+  MAX_FILE_MB = Number(CONFIG.MAX_FILE_MB) || MAX_FILE_MB;
+  MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
+  document.getElementById('maxFileLabel').textContent = MAX_FILE_MB;
+}
+
+/* ============ WELCOME MODAL + DEADLINE ============ */
+const welcomeModal = document.getElementById('welcomeModal');
+const modalEyebrow = document.getElementById('modalEyebrow');
+const modalHeading = document.getElementById('modalHeading');
+const modalBody = document.getElementById('modalBody');
+const modalDeadlineBox = document.getElementById('modalDeadlineBox');
+const modalNextBtn = document.getElementById('modalNextBtn');
+const nowClockEl = document.getElementById('nowClock');
+const timeLeftEl = document.getElementById('timeLeft');
+const regForm = document.getElementById('regForm');
+const closedState = document.getElementById('closedState');
+const successState = document.getElementById('success');
+
+function isClosed(){ return Date.now() >= DEADLINE.getTime(); }
+
+function setupModal(){
+  modalEyebrow.textContent = CONFIG.ASSOC_NAME || 'Student Registration';
+  const deadlineLabel = DEADLINE.toLocaleString('en-IN', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+  if(isClosed()){
+    modalHeading.textContent = 'Registrations Closed';
+    modalBody.innerHTML = 'The submission window ended on <b>' + deadlineLabel + '</b>.';
+    modalDeadlineBox.textContent = 'Closed · ' + deadlineLabel;
+    modalNextBtn.textContent = 'View Page';
+  } else {
+    modalHeading.textContent = 'Welcome';
+    modalBody.innerHTML = (CONFIG.WELCOME_BODY || 'Kindly submit your details on or before the deadline below.') + ' Each Department ID can only be registered once.';
+    modalDeadlineBox.textContent = 'Form closes ' + deadlineLabel;
+    modalNextBtn.textContent = 'Next';
+  }
+  modalNextBtn.disabled = false;
+}
+
+modalNextBtn.addEventListener('click', ()=>{
+  welcomeModal.style.display = 'none';
+  refreshClosedUI();
+});
+
+function refreshClosedUI(){
+  if(isClosed()){
+    regForm.style.display = 'none';
+    successState.classList.remove('show');
+    alreadyPanel.classList.remove('show');
+    closedState.classList.add('show');
+  }
+}
+
+function tickClock(){
+  const now = new Date();
+  nowClockEl.textContent = now.toLocaleString('en-IN', { weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const diff = DEADLINE.getTime() - now.getTime();
+  if(diff <= 0){
+    timeLeftEl.textContent = 'Closed';
+    timeLeftEl.classList.add('urgent');
+    refreshClosedUI();
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  timeLeftEl.textContent = (d>0 ? d+'D ' : '') + String(h).padStart(2,'0')+'H ' + String(m).padStart(2,'0')+'M ' + String(s).padStart(2,'0')+'S LEFT';
+  if(diff < 3600000) timeLeftEl.classList.add('urgent'); else timeLeftEl.classList.remove('urgent');
+}
+
+function boot(){
+  applyConfig();
+  setupModal();
+  tickClock();
+  setInterval(tickClock, 1000);
+}
+boot();
+
+/* ============ DEPARTMENT ID BUILDER ============ */
+const SEG_CONFIG = {
+  dept:    { len: 2, keys: ['2','4','5','6'], validSet: ['24','25','26'] },
+  letters: { len: 3, keys: ['U','A','Z','P','O'], validSet: ['uaz','pzo'] },
+  serial:  { len: 3, keys: ['0','1','2','3','4','5','6','7','8','9'], validSet: null }
+};
+const segValues = { dept:'', letters:'', serial:'' };
+let activeSeg = null;
+
+const segEls = {
+  dept: document.querySelector('[data-seg="dept"]'),
+  letters: document.querySelector('[data-seg="letters"]'),
+  serial: document.querySelector('[data-seg="serial"]')
+};
+const keypadWrap = document.getElementById('keypad-wrap');
+const keypadEl = document.getElementById('keypad');
+const fieldId = document.getElementById('field-id');
+
+function renderSegment(seg){
+  const el = segEls[seg];
+  const val = segValues[seg];
+  const cfg = SEG_CONFIG[seg];
+  const wasFilledOk = el.classList.contains('filled-ok');
+  el.classList.remove('invalid','filled-ok');
+  if(!val){
+    el.innerHTML = `<span class="ph">${seg==='dept'?'25':seg==='letters'?'uaz':'016'}</span>`;
+  } else {
+    el.textContent = val;
+    if(val.length === cfg.len){
+      const ok = !cfg.validSet || cfg.validSet.indexOf(val.toLowerCase()) !== -1;
+      el.classList.add(ok ? 'filled-ok' : 'invalid');
+      if(ok && !wasFilledOk){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'), 340); }
+    }
+  }
+}
+
+function openKeypad(seg){
+  activeSeg = seg;
+  Object.values(segEls).forEach(e=>e.classList.remove('active'));
+  segEls[seg].classList.add('active');
+  const cfg = SEG_CONFIG[seg];
+  keypadEl.innerHTML = '';
+  cfg.keys.forEach(k=>{
+    const b = document.createElement('div');
+    b.className = 'key';
+    b.textContent = k;
+    b.addEventListener('click', ()=>pressKey(seg,k));
+    keypadEl.appendChild(b);
+  });
+  const back = document.createElement('div');
+  back.className = 'key wide';
+  back.textContent = '⌫ Back';
+  back.addEventListener('click', ()=>backspace(seg));
+  keypadEl.appendChild(back);
+  keypadWrap.classList.add('open');
+}
+
+function pressKey(seg,k){
+  const cfg = SEG_CONFIG[seg];
+  if(segValues[seg].length >= cfg.len) return;
+  segValues[seg] += (seg==='letters' ? k.toLowerCase() : k);
+  renderSegment(seg);
+  if(segValues[seg].length === cfg.len){
+    const ok = !cfg.validSet || cfg.validSet.indexOf(segValues[seg].toLowerCase()) !== -1;
+    if(!ok){ segEls[seg].classList.add('shake'); setTimeout(()=>segEls[seg].classList.remove('shake'),400); }
+    else {
+      const order = ['dept','letters','serial'];
+      const next = order[order.indexOf(seg)+1];
+      if(next) openKeypad(next); else keypadWrap.classList.remove('open');
+    }
+  }
+  updateIdState();
+}
+
+function backspace(seg){ segValues[seg] = segValues[seg].slice(0,-1); renderSegment(seg); updateIdState(); }
+
+['dept','letters','serial'].forEach(seg=>{
+  segEls[seg].addEventListener('click', ()=>openKeypad(seg));
+  segEls[seg].addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') openKeypad(seg); });
+});
+
+const autoEmailEl = document.getElementById('autoEmail');
+
+/* ============ LIVE DUPLICATE-REGISTRATION CHECK ============ */
+const idStatusEl = document.getElementById('idStatus');
+const gatedFields = document.getElementById('gatedFields');
+const alreadyPanel = document.getElementById('alreadyPanel');
+const alreadyIdEl = document.getElementById('alreadyId');
+const alreadyWhenEl = document.getElementById('alreadyWhen');
+const alreadyResetBtn = document.getElementById('alreadyResetBtn');
+let idCheckToken = 0;
+let idVerified = false;
+
+function resetGate(){ idVerified = false; gatedFields.classList.remove('revealed'); }
+
+function setIdStatus(state, message){
+  idStatusEl.className = 'id-status' + (state ? ' ' + state : '');
+  if(!state){ idStatusEl.style.display = 'none'; idStatusEl.innerHTML = ''; return; }
+  if(state === 'checking'){
+    idStatusEl.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span><span>' + message + '</span>';
+  } else {
+    idStatusEl.innerHTML = '<span>' + message + '</span>';
+  }
+}
+
+function showAlreadyRegistered(specimenId, timestamp){
+  const when = timestamp ? new Date(timestamp).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+  alreadyIdEl.textContent = specimenId;
+  alreadyWhenEl.textContent = when ? ' on ' + when : '';
+  setIdStatus('', '');
+  fieldId.classList.remove('checking');
+  regForm.style.display = 'none';
+  successState.classList.remove('show');
+  alreadyPanel.classList.add('show');
+}
+
+function hideAlreadyRegistered(){ alreadyPanel.classList.remove('show'); regForm.style.display = ''; }
+
+alreadyResetBtn.addEventListener('click', ()=>{
+  hideAlreadyRegistered();
+  idCheckToken++;
+  segValues.dept = ''; segValues.letters = ''; segValues.serial = '';
+  ['dept','letters','serial'].forEach(seg=>{ segEls[seg].classList.remove('active','filled-ok','invalid'); renderSegment(seg); });
+  keypadWrap.classList.remove('open');
+  setIdStatus('', '');
+  resetGate();
+  validateForm();
+  openKeypad('dept');
+});
+
+function checkRegistrationStatus(specimenId){
+  return jsonpRequest(APPS_SCRIPT_URL + '?action=check&id=' + encodeURIComponent(specimenId));
+}
+
+async function runDuplicateCheck(specimenId){
+  const token = ++idCheckToken;
+  resetGate();
+  fieldId.classList.add('checking');
+  setIdStatus('checking', 'Checking Department ID…');
+  let result;
+  try{
+    result = await checkRegistrationStatus(specimenId);
+  } catch(err){
+    if(token !== idCheckToken) return;
+    fieldId.classList.remove('checking');
+    setIdStatus('warn', "Couldn't verify right now — check your connection. You may continue, but a duplicate ID will still be rejected when you submit.");
+    idVerified = true;
+    gatedFields.classList.add('revealed');
+    updateClassOptions();
+    validateForm();
+    return;
+  }
+  if(token !== idCheckToken) return;
+  fieldId.classList.remove('checking');
+  if(result.status === 'registered'){
+    showAlreadyRegistered(specimenId, result.timestamp);
+    return;
+  } else if(result.status === 'available'){
+    setIdStatus('ok', '✓ Department ID verified — continue below.');
+    idVerified = true;
+    gatedFields.classList.add('revealed');
+  } else {
+    setIdStatus('warn', "Couldn't verify this ID right now. You may continue, but duplicates are still rejected when you submit.");
+    idVerified = true;
+    gatedFields.classList.add('revealed');
+  }
+  updateClassOptions();
+  validateForm();
+}
+
+/* ============ CLASS OPTIONS (depend on UAZ / PZO) ============ */
+const classSelect = document.getElementById('studentClass');
+const UG_CLASSES = ['1st UG', '2nd UG', '3rd UG'];
+const PG_CLASSES = ['1st PG', '2nd PG'];
+
+function updateClassOptions(){
+  const letters = segValues.letters.toLowerCase();
+  const list = letters === 'uaz' ? UG_CLASSES : letters === 'pzo' ? PG_CLASSES : [];
+  const prevVal = classSelect.value;
+  classSelect.innerHTML = '<option value="">Select class</option>' + list.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(list.includes(prevVal)) classSelect.value = prevVal; else classSelect.value = '';
+  updatePhotoRequirement();
+}
+
+function updateIdState(){
+  const deptCfg = SEG_CONFIG.dept, letCfg = SEG_CONFIG.letters, serCfg = SEG_CONFIG.serial;
+  const deptOk = segValues.dept.length===deptCfg.len && deptCfg.validSet.includes(segValues.dept);
+  const letOk = segValues.letters.length===letCfg.len && letCfg.validSet.includes(segValues.letters);
+  const serOk = segValues.serial.length===serCfg.len;
+  const allOk = deptOk && letOk && serOk;
+
+  const anyFilledInvalid = (segValues.dept.length===deptCfg.len && !deptOk) || (segValues.letters.length===letCfg.len && !letOk);
+  fieldId.classList.toggle('invalid', anyFilledInvalid);
+
+  if(allOk){
+    const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
+    autoEmailEl.textContent = email;
+    autoEmailEl.classList.add('ready');
+    const specimenId = `${segValues.dept}-${segValues.letters}-${segValues.serial}`;
+    runDuplicateCheck(specimenId);
+  } else {
+    autoEmailEl.textContent = 'Complete the Department ID above';
+    autoEmailEl.classList.remove('ready');
+    idCheckToken++;
+    setIdStatus('', '');
+    resetGate();
+    classSelect.innerHTML = '<option value="">Select class</option>';
+  }
+  validateForm();
+}
+
+/* ============ NAME / MOBILE — force uppercase ============ */
+const nameInput = document.getElementById('name');
+const mobileInput = document.getElementById('mobile');
+const fieldMobile = document.getElementById('field-mobile');
+
+function watchInput(input){ input.addEventListener('input', validateForm); }
+watchInput(nameInput);
+watchInput(document.getElementById('fatherName'));
+watchInput(document.getElementById('motherName'));
+watchInput(document.getElementById('guardianName'));
+watchInput(document.getElementById('guardianRelation'));
+watchInput(document.getElementById('address'));
+watchInput(document.getElementById('district'));
+watchInput(document.getElementById('state'));
+
+function bindMobile(el){ el.addEventListener('input', ()=>{ el.value = el.value.replace(/\D/g,'').slice(0,10); validateForm(); }); }
+bindMobile(mobileInput);
+bindMobile(document.getElementById('fatherMobile'));
+bindMobile(document.getElementById('motherMobile'));
+bindMobile(document.getElementById('guardianMobile'));
+
+classSelect.addEventListener('change', ()=>{ updatePhotoRequirement(); validateForm(); });
+document.getElementById('dob').addEventListener('change', validateForm);
+
+/* ============ FATHER / MOTHER TOGGLES + GUARDIAN LOGIC ============ */
+const parentStatus = { father: '', mother: '' };
+const fatherSub = document.getElementById('fatherSub');
+const motherSub = document.getElementById('motherSub');
+const guardianField = document.getElementById('field-guardian');
+
+document.querySelectorAll('.toggle-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const parent = btn.dataset.parent;
+    const val = btn.dataset.val;
+    parentStatus[parent] = val;
+    document.querySelectorAll(`.toggle-btn[data-parent="${parent}"]`).forEach(b=>b.classList.toggle('selected', b===btn));
+    const sub = parent === 'father' ? fatherSub : motherSub;
+    sub.classList.toggle('open', val === 'alive');
+    updateGuardianVisibility();
+    validateForm();
+  });
+});
+
+function updateGuardianVisibility(){
+  const bothNotAlive = parentStatus.father === 'notalive' && parentStatus.mother === 'notalive';
+  guardianField.style.display = bothNotAlive ? '' : 'none';
+  if(!bothNotAlive){
+    document.getElementById('guardianName').value = '';
+    document.getElementById('guardianRelation').value = '';
+    document.getElementById('guardianMobile').value = '';
+  }
+}
+
+/* ============ PINCODE AUTO-FILL ============ */
+const pincodeInput = document.getElementById('pincode');
+const districtInput = document.getElementById('district');
+const stateInput = document.getElementById('state');
+const pincodeStatus = document.getElementById('pincodeStatus');
+
+pincodeInput.addEventListener('input', ()=>{
+  pincodeInput.value = pincodeInput.value.replace(/\D/g,'').slice(0,6);
+  if(pincodeInput.value.length === 6) lookupPincode(pincodeInput.value);
+  validateForm();
+});
+
+async function lookupPincode(pin){
+  pincodeStatus.textContent = 'Looking up pincode…';
+  try{
+    const res = await fetch('https://api.postalpincode.in/pincode/' + pin);
+    const data = await res.json();
+    if(data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length){
+      const po = data[0].PostOffice[0];
+      stateInput.value = po.State || '';
+      districtInput.value = po.District || '';
+      pincodeStatus.textContent = 'State and district filled in automatically. Edit if incorrect.';
+    } else {
+      pincodeStatus.textContent = 'Pincode not recognised — please enter State/District manually.';
+    }
+  } catch(err){
+    pincodeStatus.textContent = 'Could not auto-fill — please enter State/District manually.';
+  }
+  validateForm();
+}
+
+/* ============ PHOTO REQUIREMENT (skip for 1st UG / 1st PG) ============ */
+const fieldPhoto = document.getElementById('field-photo');
+function needsPhoto(){
+  const cls = classSelect.value;
+  if(cls === '') return false;
+  const firstYearCode = CONFIG.FIRST_YEAR_CODE ? String(CONFIG.FIRST_YEAR_CODE).trim() : '';
+  if(firstYearCode && segValues.dept === firstYearCode){
+    // Current intake year (set in CONFIG.FIRST_YEAR_CODE above) — freshers skip the photo.
+    return false;
+  }
+  if(!firstYearCode){
+    // Fallback if FIRST_YEAR_CODE isn't set: use class name instead.
+    return cls !== '1st UG' && cls !== '1st PG';
+  }
+  return true;
+}
+function updatePhotoRequirement(){
+  fieldPhoto.style.display = needsPhoto() ? '' : 'none';
+  if(!needsPhoto()){
+    fileBase64 = null; fileName = null; fileMime = null;
+    filePreview.classList.remove('show');
+    dropzone.classList.remove('has-file');
+  }
+}
+
+/* ============ FILE UPLOAD ============ */
+const dropzone = document.getElementById('dropzone');
+const photoFile = document.getElementById('photoFile');
+const filePreview = document.getElementById('filePreview');
+const fileMeta = document.getElementById('fileMeta');
+const fieldPhotoErr = document.getElementById('field-photo');
+let fileBase64 = null, fileMime = null, fileName = null;
+
+dropzone.addEventListener('click', ()=>photoFile.click());
+
+photoFile.addEventListener('change', ()=>{
+  const f = photoFile.files[0];
+  fieldPhotoErr.classList.remove('invalid');
+  if(!f) return;
+  const allowed = ['image/png','image/jpeg'];
+  if(!allowed.includes(f.type) || f.size > MAX_FILE_BYTES){
+    fieldPhotoErr.classList.add('invalid');
+    filePreview.classList.remove('show');
+    fileBase64 = null;
+    validateForm();
+    return;
+  }
+  fileName = f.name; fileMime = f.type;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    fileBase64 = reader.result.split(',')[1];
+    dropzone.classList.add('has-file');
+    filePreview.classList.add('show');
+    const sizeKb = (f.size/1024).toFixed(0);
+    document.getElementById('fileIcon').src = reader.result;
+    const img = new Image();
+    img.onload = ()=>{ fileMeta.innerHTML = `<b>${fileName}</b>${img.width}×${img.height}px · ${sizeKb} KB`; };
+    img.src = reader.result;
+    validateForm();
+  };
+  reader.readAsDataURL(f);
+});
+
+/* ============ VALIDATION ============ */
+const submitBtn = document.getElementById('submitBtn');
+function validateForm(){
+  const idOk = segValues.dept.length===2 && SEG_CONFIG.dept.validSet.includes(segValues.dept)
+            && segValues.letters.length===3 && SEG_CONFIG.letters.validSet.includes(segValues.letters)
+            && segValues.serial.length===3;
+  const nameOk = nameInput.value.trim().length > 1;
+  const classOk = classSelect.value !== '';
+  const mobileOk = /^[6-9]\d{9}$/.test(mobileInput.value);
+  fieldMobile.classList.toggle('invalid', mobileInput.value.length===10 && !mobileOk);
+  const dobOk = !!document.getElementById('dob').value;
+
+  const fatherStatusOk = parentStatus.father !== '';
+  let fatherOk = fatherStatusOk;
+  if(parentStatus.father === 'alive'){
+    const fName = document.getElementById('fatherName').value.trim().length > 1;
+    const fMobileVal = document.getElementById('fatherMobile').value;
+    const fMobileOk = /^[6-9]\d{9}$/.test(fMobileVal);
+    document.getElementById('field-father-mobile').classList.toggle('invalid', fMobileVal.length===10 && !fMobileOk);
+    fatherOk = fName && fMobileOk;
+  }
+
+  const motherStatusOk = parentStatus.mother !== '';
+  let motherOk = motherStatusOk;
+  if(parentStatus.mother === 'alive'){
+    const mName = document.getElementById('motherName').value.trim().length > 1;
+    const mMobileVal = document.getElementById('motherMobile').value;
+    const mMobileOk = /^[6-9]\d{9}$/.test(mMobileVal);
+    document.getElementById('field-mother-mobile').classList.toggle('invalid', mMobileVal.length===10 && !mMobileOk);
+    motherOk = mName && mMobileOk;
+  }
+
+  let guardianOk = true;
+  const bothNotAlive = parentStatus.father === 'notalive' && parentStatus.mother === 'notalive';
+  if(bothNotAlive){
+    const gName = document.getElementById('guardianName').value.trim().length > 1;
+    const gRel = document.getElementById('guardianRelation').value.trim().length > 1;
+    const gMobileVal = document.getElementById('guardianMobile').value;
+    const gMobileOk = /^[6-9]\d{9}$/.test(gMobileVal);
+    document.getElementById('field-guardian-mobile').classList.toggle('invalid', gMobileVal.length===10 && !gMobileOk);
+    guardianOk = gName && gRel && gMobileOk;
+  }
+
+  const addressOk = document.getElementById('address').value.trim().length > 3;
+  const pincodeOk = /^\d{6}$/.test(pincodeInput.value);
+  const districtOk = districtInput.value.trim().length > 1;
+  const stateOk = stateInput.value.trim().length > 1;
+
+  const photoOk = !needsPhoto() || !!fileBase64;
+
+  submitBtn.disabled = !(idOk && idVerified && nameOk && classOk && mobileOk && dobOk &&
+    fatherOk && motherOk && guardianOk && addressOk && pincodeOk && districtOk && stateOk && photoOk) || isClosed();
+}
+
+/* ============ SUBMIT ============ */
+const formError = document.getElementById('formError');
+
+regForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(submitBtn.disabled || !idVerified) return;
+  if(isClosed()){ refreshClosedUI(); return; }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Verifying…';
+  formError.style.display = 'none';
+
+  const specimenId = `${segValues.dept}-${segValues.letters}-${segValues.serial}`;
+  const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
+
+  try{
+    const recheck = await checkRegistrationStatus(specimenId);
+    if(recheck.status === 'registered'){ showAlreadyRegistered(specimenId, recheck.timestamp); return; }
+  } catch(err){ /* fail-open; backend still refuses duplicates */ }
+
+  submitBtn.textContent = 'Submitting…';
+
+  const payload = {
+    specimenId, name: nameInput.value.trim(), email,
+    studentClass: classSelect.value,
+    mobile: mobileInput.value,
+    dob: document.getElementById('dob').value,
+    fatherStatus: parentStatus.father,
+    fatherName: parentStatus.father === 'alive' ? document.getElementById('fatherName').value.trim() : '',
+    fatherMobile: parentStatus.father === 'alive' ? document.getElementById('fatherMobile').value : '',
+    motherStatus: parentStatus.mother,
+    motherName: parentStatus.mother === 'alive' ? document.getElementById('motherName').value.trim() : '',
+    motherMobile: parentStatus.mother === 'alive' ? document.getElementById('motherMobile').value : '',
+    guardianName: guardianField.style.display !== 'none' ? document.getElementById('guardianName').value.trim() : '',
+    guardianRelation: guardianField.style.display !== 'none' ? document.getElementById('guardianRelation').value.trim() : '',
+    guardianMobile: guardianField.style.display !== 'none' ? document.getElementById('guardianMobile').value : '',
+    address: document.getElementById('address').value.trim(),
+    pincode: pincodeInput.value,
+    district: districtInput.value.trim(),
+    state: stateInput.value.trim(),
+    fileName: needsPhoto() ? fileName : '',
+    fileMimeType: needsPhoto() ? fileMime : '',
+    fileData: needsPhoto() ? fileBase64 : ''
+  };
+
+  if(APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
+    formError.textContent = 'This form is not yet connected — paste your Apps Script Web App URL into APPS_SCRIPT_URL.';
+    formError.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Registration';
+    return;
+  }
+
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('successId').textContent = specimenId;
+    document.getElementById('successEmail').textContent = email;
+    regForm.style.display = 'none';
+    successState.classList.add('show');
+  } catch(err){
+    formError.textContent = 'Something went wrong sending your registration. Please check your connection and try again.';
+    formError.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Registration';
+  }
+});
+</script>
+</body>
+</html>

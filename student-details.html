@@ -72,6 +72,7 @@
   select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%233C4E65' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
   input:focus,textarea:focus,select:focus{border-color:var(--gold-deep);background:var(--cream);box-shadow:0 0 0 3px rgba(201,162,39,0.15);}
   .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--error);}
+  input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed;background:var(--parchment-deep);}
   .specimen-row{display:flex;align-items:center;gap:8px;}
   .segment{flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;letter-spacing:2px;padding:13px 6px;
     background:var(--parchment);border:1.5px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink);user-select:none;text-transform:uppercase;
@@ -97,6 +98,7 @@
   .id-status.checking{display:flex;background:var(--parchment-deep);color:var(--ink-soft);}
   .id-status.ok{display:flex;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-line);}
   .id-status.warn{display:flex;background:var(--warn-bg);color:var(--gold-deep);border:1px solid var(--line);}
+  .id-status.error{display:flex;background:#FBE5E3;color:var(--error);border:1px solid #F0C4C0;}
   .loading-dots{display:inline-flex;gap:5px;align-items:center;flex:none;}
   .loading-dots span{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);animation:dotBounce 1s ease-in-out infinite;}
   .loading-dots span:nth-child(2){animation-delay:.15s;}
@@ -144,6 +146,16 @@
   .success h3{font-family:'Fraunces',serif;font-weight:500;font-size:21px;margin:20px 0 8px;}
   .success p{font-size:13px;color:var(--ink-soft);line-height:1.7;}
   .success .sid{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;text-transform:uppercase;}
+  .success-summary{text-align:left;background:var(--parchment);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:18px 0;font-size:13px;line-height:1.9;}
+  .success-summary div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:4px 0;}
+  .success-summary div:last-child{border-bottom:none;}
+  .success-summary b{color:var(--ink-soft);font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
+  .success-summary span{color:var(--ink);text-align:right;word-break:break-word;}
+  .pdf-btn{width:100%;background:var(--cream);color:var(--ink);border:1.5px solid var(--gold-deep);border-radius:9px;padding:14px;font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;letter-spacing:1.3px;font-weight:600;cursor:pointer;margin-top:14px;text-transform:uppercase;transition:background .15s,transform .1s;}
+  .pdf-btn:hover:not(:disabled){background:var(--parchment-deep);}
+  .pdf-btn:active:not(:disabled){transform:translateY(1px);}
+  .pdf-btn:disabled{opacity:.5;cursor:wait;}
   .already{display:none;text-align:center;padding:20px 10px 6px;}
   .already.show{display:block;animation:riseIn .4s ease both;}
   .already .stamp{color:var(--gold-deep);border-color:var(--gold-deep);}
@@ -231,11 +243,13 @@
         <div class="field" id="field-name">
           <label>Name</label>
           <input type="text" id="name" autocomplete="name" placeholder="Full name as per college records">
+          <p class="err" id="err-name">Enter your full name (at least 2 characters).</p>
         </div>
 
         <div class="field" id="field-class">
           <label>Class</label>
           <select id="studentClass"><option value="">Select class</option></select>
+          <p class="err" id="err-class">Please select your class.</p>
         </div>
 
         <div class="field">
@@ -251,7 +265,9 @@
 
         <div class="field" id="field-dob">
           <label>Date of Birth</label>
-          <input type="date" id="dob">
+          <input type="date" id="dob" disabled>
+          <p class="err" id="err-dob">Please select your date of birth.</p>
+          <p class="hint" id="dobLockHint">Enter a valid 10-digit contact number above to continue.</p>
         </div>
 
         <div class="divider"><div class="line"></div><span>Family Details</span><div class="line"></div></div>
@@ -262,10 +278,12 @@
             <div class="toggle-btn" data-parent="father" data-val="alive">Alive</div>
             <div class="toggle-btn" data-parent="father" data-val="notalive">Not Alive</div>
           </div>
+          <p class="err" id="err-father-status">Please select Father's status.</p>
           <div class="subfields" id="fatherSub">
             <div class="field" style="margin-bottom:14px;">
               <label>Father's Name</label>
               <input type="text" id="fatherName" placeholder="Father's full name">
+              <p class="err" id="err-fatherName">Enter father's full name.</p>
             </div>
             <div class="field" id="field-father-mobile" style="margin-bottom:0;">
               <label>Father's Contact Number</label>
@@ -281,10 +299,12 @@
             <div class="toggle-btn" data-parent="mother" data-val="alive">Alive</div>
             <div class="toggle-btn" data-parent="mother" data-val="notalive">Not Alive</div>
           </div>
+          <p class="err" id="err-mother-status">Please select Mother's status.</p>
           <div class="subfields" id="motherSub">
             <div class="field" style="margin-bottom:14px;">
               <label>Mother's Name</label>
               <input type="text" id="motherName" placeholder="Mother's full name">
+              <p class="err" id="err-motherName">Enter mother's full name.</p>
             </div>
             <div class="field" id="field-mother-mobile" style="margin-bottom:0;">
               <label>Mother's Contact Number</label>
@@ -298,9 +318,11 @@
           <label>Guardian Details</label>
           <div class="field" style="margin-bottom:14px;">
             <input type="text" id="guardianName" placeholder="Guardian's full name">
+            <p class="err" id="err-guardianName">Enter guardian's full name.</p>
           </div>
           <div class="field" style="margin-bottom:14px;">
             <input type="text" id="guardianRelation" placeholder="Relation to student (e.g. Uncle, Elder Brother)">
+            <p class="err" id="err-guardianRelation">Enter guardian's relation to student.</p>
           </div>
           <div class="field" id="field-guardian-mobile" style="margin-bottom:0;">
             <input type="tel" id="guardianMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
@@ -314,22 +336,26 @@
         <div class="field" id="field-address">
           <label>Address</label>
           <textarea id="address" placeholder="House no., street, area"></textarea>
+          <p class="err" id="err-address">Enter your address (at least 4 characters).</p>
         </div>
 
         <div class="field" id="field-pincode">
           <label>Pincode</label>
           <input type="text" id="pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
           <p class="hint" id="pincodeStatus">State and district fill in automatically.</p>
+          <p class="err" id="err-pincode">Enter a valid 6-digit pincode.</p>
         </div>
 
         <div class="two-col">
           <div class="field" id="field-district">
             <label>District</label>
             <input type="text" id="district" placeholder="District">
+            <p class="err" id="err-district">Required.</p>
           </div>
           <div class="field" id="field-state">
             <label>State</label>
             <input type="text" id="state" placeholder="State">
+            <p class="err" id="err-state">Required.</p>
           </div>
         </div>
 
@@ -355,7 +381,10 @@
     <div class="success" id="success">
       <div class="stamp">✓ Registered</div>
       <h3>Thank you.</h3>
-      <p>Your entry has been recorded under <span class="sid" id="successId"></span>.<br>A confirmation has been sent to <span class="sid" id="successEmail" style="text-transform:lowercase;"></span>.</p>
+      <p>Your entry has been recorded under <span class="sid" id="successId"></span>.</p>
+      <p>A confirmation has been sent to <span class="sid" id="successEmail"></span>.</p>
+      <div class="success-summary" id="successSummary"></div>
+      <button type="button" class="pdf-btn" id="downloadPdfBtn">⬇ Download my details as PDF</button>
     </div>
 
     <div class="already" id="alreadyPanel">
@@ -375,6 +404,8 @@
   <p class="footer-note" id="footerNote"></p>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* ============ CONFIG (hardcoded here — no "Config" sheet needed anymore) ============
    Edit these values directly whenever the deadline, deployment, or year changes. */
@@ -643,7 +674,15 @@ alreadyResetBtn.addEventListener('click', ()=>{
 });
 
 function checkRegistrationStatus(specimenId){
-  return jsonpRequest(APPS_SCRIPT_URL + '?action=check&id=' + encodeURIComponent(specimenId));
+  // _ts is a cache-buster only — its value is never used server-side. Without
+  // it, browsers (and some CDNs) can serve a stale cached response for this
+  // <script src="..."> GET request, so a student could see "available" for an
+  // ID someone else registered moments earlier. The final decision on
+  // duplicates is always made by doPost on submit, not by this check — this
+  // call only controls whether the form unlocks early for a smoother UX.
+  const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
+  return jsonpRequest(APPS_SCRIPT_URL + '?action=check&id=' + encodeURIComponent(specimenId) +
+    '&email=' + encodeURIComponent(email) + '&_ts=' + Date.now());
 }
 
 async function runDuplicateCheck(specimenId){
@@ -723,13 +762,14 @@ function updateIdState(){
   validateForm();
 }
 
-/* ============ NAME / MOBILE — force uppercase ============ */
+/* ============ NAME / MOBILE ============ */
 const nameInput = document.getElementById('name');
 const mobileInput = document.getElementById('mobile');
 const fieldMobile = document.getElementById('field-mobile');
+const dobInput = document.getElementById('dob');
+const dobLockHint = document.getElementById('dobLockHint');
 
 function watchInput(input){ input.addEventListener('input', validateForm); }
-watchInput(nameInput);
 watchInput(document.getElementById('fatherName'));
 watchInput(document.getElementById('motherName'));
 watchInput(document.getElementById('guardianName'));
@@ -738,14 +778,87 @@ watchInput(document.getElementById('address'));
 watchInput(document.getElementById('district'));
 watchInput(document.getElementById('state'));
 
-function bindMobile(el){ el.addEventListener('input', ()=>{ el.value = el.value.replace(/\D/g,'').slice(0,10); validateForm(); }); }
-bindMobile(mobileInput);
-bindMobile(document.getElementById('fatherMobile'));
-bindMobile(document.getElementById('motherMobile'));
-bindMobile(document.getElementById('guardianMobile'));
+/* --- Live "10-digit" gating: DOB (and everything after it) stays locked
+   until the student's own mobile number is a valid 10-digit number. --- */
+function isValidMobile(v){ return /^[6-9]\d{9}$/.test(v); }
 
-classSelect.addEventListener('change', ()=>{ updatePhotoRequirement(); validateForm(); });
-document.getElementById('dob').addEventListener('change', validateForm);
+function updateMobileGate(){
+  const val = mobileInput.value;
+  const ok = isValidMobile(val);
+  dobInput.disabled = !ok;
+  dobLockHint.style.display = ok ? 'none' : '';
+  if(!ok) dobInput.value = '';
+}
+
+nameInput.addEventListener('input', ()=>{
+  const errEl = document.getElementById('err-name');
+  document.getElementById('field-name').classList.toggle('invalid', nameInput.value.length>0 && nameInput.value.trim().length<=1);
+  validateForm();
+});
+nameInput.addEventListener('blur', ()=>{
+  document.getElementById('field-name').classList.toggle('invalid', nameInput.value.trim().length<=1);
+});
+
+mobileInput.addEventListener('input', ()=>{
+  mobileInput.value = mobileInput.value.replace(/\D/g,'').slice(0,10);
+  const v = mobileInput.value;
+  if(v.length === 0){
+    fieldMobile.classList.remove('invalid');
+  } else if(v.length < 10){
+    fieldMobile.classList.remove('invalid'); // don't scold mid-typing
+  } else if(!isValidMobile(v)){
+    fieldMobile.classList.add('invalid');
+    document.getElementById('err-mobile').textContent = 'That doesn\'t look like a valid Indian mobile number — it must be 10 digits and start with 6, 7, 8 or 9.';
+  } else {
+    fieldMobile.classList.remove('invalid');
+  }
+  updateMobileGate();
+  validateForm();
+});
+mobileInput.addEventListener('blur', ()=>{
+  const v = mobileInput.value;
+  if(v.length > 0 && v.length < 10){
+    fieldMobile.classList.add('invalid');
+    document.getElementById('err-mobile').textContent = 'Enter all 10 digits of your mobile number (' + v.length + '/10 entered).';
+  } else if(v.length === 10 && !isValidMobile(v)){
+    fieldMobile.classList.add('invalid');
+    document.getElementById('err-mobile').textContent = 'That doesn\'t look like a valid Indian mobile number — it must be 10 digits and start with 6, 7, 8 or 9.';
+  }
+});
+
+dobInput.addEventListener('change', ()=>{
+  document.getElementById('field-dob').classList.toggle('invalid', !dobInput.value);
+  validateForm();
+});
+
+classSelect.addEventListener('change', ()=>{
+  document.getElementById('field-class').classList.remove('invalid');
+  updatePhotoRequirement(); validateForm();
+});
+
+function bindMobile(el, errFieldId, errMsgId){
+  const fieldEl = document.getElementById(errFieldId);
+  el.addEventListener('input', ()=>{
+    el.value = el.value.replace(/\D/g,'').slice(0,10);
+    const v = el.value;
+    if(v.length === 0 || v.length < 10){ fieldEl.classList.remove('invalid'); }
+    else if(!isValidMobile(v)){
+      fieldEl.classList.add('invalid');
+      document.getElementById(errMsgId).textContent = 'That doesn\'t look like a valid Indian mobile number — it must be 10 digits and start with 6, 7, 8 or 9.';
+    } else { fieldEl.classList.remove('invalid'); }
+    validateForm();
+  });
+  el.addEventListener('blur', ()=>{
+    const v = el.value;
+    if(v.length > 0 && v.length < 10){
+      fieldEl.classList.add('invalid');
+      document.getElementById(errMsgId).textContent = 'Enter all 10 digits of the mobile number (' + v.length + '/10 entered).';
+    }
+  });
+}
+bindMobile(document.getElementById('fatherMobile'), 'field-father-mobile', 'err-fatherMobile');
+bindMobile(document.getElementById('motherMobile'), 'field-mother-mobile', 'err-motherMobile');
+bindMobile(document.getElementById('guardianMobile'), 'field-guardian-mobile', 'err-guardianMobile');
 
 /* ============ FATHER / MOTHER TOGGLES + GUARDIAN LOGIC ============ */
 const parentStatus = { father: '', mother: '' };
@@ -758,6 +871,7 @@ document.querySelectorAll('.toggle-btn').forEach(btn=>{
     const parent = btn.dataset.parent;
     const val = btn.dataset.val;
     parentStatus[parent] = val;
+    document.getElementById('field-' + parent + '-status').classList.remove('invalid');
     document.querySelectorAll(`.toggle-btn[data-parent="${parent}"]`).forEach(b=>b.classList.toggle('selected', b===btn));
     const sub = parent === 'father' ? fatherSub : motherSub;
     sub.classList.toggle('open', val === 'alive');
@@ -781,11 +895,18 @@ const pincodeInput = document.getElementById('pincode');
 const districtInput = document.getElementById('district');
 const stateInput = document.getElementById('state');
 const pincodeStatus = document.getElementById('pincodeStatus');
+const fieldPincode = document.getElementById('field-pincode');
 
 pincodeInput.addEventListener('input', ()=>{
   pincodeInput.value = pincodeInput.value.replace(/\D/g,'').slice(0,6);
+  fieldPincode.classList.remove('invalid');
   if(pincodeInput.value.length === 6) lookupPincode(pincodeInput.value);
   validateForm();
+});
+pincodeInput.addEventListener('blur', ()=>{
+  if(pincodeInput.value.length > 0 && pincodeInput.value.length < 6){
+    fieldPincode.classList.add('invalid');
+  }
 });
 
 async function lookupPincode(pin){
@@ -800,6 +921,7 @@ async function lookupPincode(pin){
       pincodeStatus.textContent = 'State and district filled in automatically. Edit if incorrect.';
     } else {
       pincodeStatus.textContent = 'Pincode not recognised — please enter State/District manually.';
+      fieldPincode.classList.add('invalid');
     }
   } catch(err){
     pincodeStatus.textContent = 'Could not auto-fill — please enter State/District manually.';
@@ -847,8 +969,17 @@ photoFile.addEventListener('change', ()=>{
   fieldPhotoErr.classList.remove('invalid');
   if(!f) return;
   const allowed = ['image/png','image/jpeg'];
-  if(!allowed.includes(f.type) || f.size > MAX_FILE_BYTES){
+  if(!allowed.includes(f.type)){
     fieldPhotoErr.classList.add('invalid');
+    document.getElementById('err-photo').textContent = 'Only JPG or PNG images are allowed.';
+    filePreview.classList.remove('show');
+    fileBase64 = null;
+    validateForm();
+    return;
+  }
+  if(f.size > MAX_FILE_BYTES){
+    fieldPhotoErr.classList.add('invalid');
+    document.getElementById('err-photo').textContent = 'File is too large — max ' + MAX_FILE_MB + ' MB (yours is ' + (f.size/1024/1024).toFixed(1) + ' MB).';
     filePreview.classList.remove('show');
     fileBase64 = null;
     validateForm();
@@ -878,17 +1009,16 @@ function validateForm(){
             && segValues.serial.length===3;
   const nameOk = nameInput.value.trim().length > 1;
   const classOk = classSelect.value !== '';
-  const mobileOk = /^[6-9]\d{9}$/.test(mobileInput.value);
-  fieldMobile.classList.toggle('invalid', mobileInput.value.length===10 && !mobileOk);
-  const dobOk = !!document.getElementById('dob').value;
+  const mobileOk = isValidMobile(mobileInput.value);
+  updateMobileGate();
+  const dobOk = mobileOk && !!dobInput.value;
 
   const fatherStatusOk = parentStatus.father !== '';
   let fatherOk = fatherStatusOk;
   if(parentStatus.father === 'alive'){
     const fName = document.getElementById('fatherName').value.trim().length > 1;
     const fMobileVal = document.getElementById('fatherMobile').value;
-    const fMobileOk = /^[6-9]\d{9}$/.test(fMobileVal);
-    document.getElementById('field-father-mobile').classList.toggle('invalid', fMobileVal.length===10 && !fMobileOk);
+    const fMobileOk = isValidMobile(fMobileVal);
     fatherOk = fName && fMobileOk;
   }
 
@@ -897,8 +1027,7 @@ function validateForm(){
   if(parentStatus.mother === 'alive'){
     const mName = document.getElementById('motherName').value.trim().length > 1;
     const mMobileVal = document.getElementById('motherMobile').value;
-    const mMobileOk = /^[6-9]\d{9}$/.test(mMobileVal);
-    document.getElementById('field-mother-mobile').classList.toggle('invalid', mMobileVal.length===10 && !mMobileOk);
+    const mMobileOk = isValidMobile(mMobileVal);
     motherOk = mName && mMobileOk;
   }
 
@@ -908,8 +1037,7 @@ function validateForm(){
     const gName = document.getElementById('guardianName').value.trim().length > 1;
     const gRel = document.getElementById('guardianRelation').value.trim().length > 1;
     const gMobileVal = document.getElementById('guardianMobile').value;
-    const gMobileOk = /^[6-9]\d{9}$/.test(gMobileVal);
-    document.getElementById('field-guardian-mobile').classList.toggle('invalid', gMobileVal.length===10 && !gMobileOk);
+    const gMobileOk = isValidMobile(gMobileVal);
     guardianOk = gName && gRel && gMobileOk;
   }
 
@@ -926,12 +1054,15 @@ function validateForm(){
 
 /* ============ SUBMIT ============ */
 const formError = document.getElementById('formError');
+let submissionInFlight = false;
+let submissionComplete = false;
 
 regForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
-  if(submitBtn.disabled || !idVerified) return;
+  if(submitBtn.disabled || !idVerified || submissionInFlight || submissionComplete) return;
   if(isClosed()){ refreshClosedUI(); return; }
 
+  submissionInFlight = true;
   submitBtn.disabled = true;
   submitBtn.textContent = 'Verifying…';
   formError.style.display = 'none';
@@ -941,8 +1072,12 @@ regForm.addEventListener('submit', async (e)=>{
 
   try{
     const recheck = await checkRegistrationStatus(specimenId);
-    if(recheck.status === 'registered'){ showAlreadyRegistered(specimenId, recheck.timestamp); return; }
-  } catch(err){ /* fail-open; backend still refuses duplicates */ }
+    if(recheck.status === 'registered'){
+      submissionInFlight = false;
+      showAlreadyRegistered(specimenId, recheck.timestamp);
+      return;
+    }
+  } catch(err){ /* JSONP check failed — fall through, backend still enforces uniqueness on submit */ }
 
   submitBtn.textContent = 'Submitting…';
 
@@ -950,7 +1085,7 @@ regForm.addEventListener('submit', async (e)=>{
     specimenId, name: nameInput.value.trim(), email,
     studentClass: classSelect.value,
     mobile: mobileInput.value,
-    dob: document.getElementById('dob').value,
+    dob: dobInput.value,
     fatherStatus: parentStatus.father,
     fatherName: parentStatus.father === 'alive' ? document.getElementById('fatherName').value.trim() : '',
     fatherMobile: parentStatus.father === 'alive' ? document.getElementById('fatherMobile').value : '',
@@ -972,26 +1107,103 @@ regForm.addEventListener('submit', async (e)=>{
   if(APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
     formError.textContent = 'This form is not yet connected — paste your Apps Script Web App URL into APPS_SCRIPT_URL.';
     formError.style.display = 'block';
+    submissionInFlight = false;
     submitBtn.disabled = false;
     submitBtn.textContent = 'Submit Registration';
     return;
   }
 
   try{
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
+    // NOTE: this is a normal (CORS) request, NOT no-cors — that is deliberate.
+    // With no-cors the response is opaque and the page can never learn whether
+    // the backend actually accepted, rejected as duplicate, or errored — that
+    // was why the old form could show "Registered" for entries the sheet had
+    // already rejected. Apps Script's doPost response is readable as long as
+    // the request stays a "simple request" (hence text/plain content-type,
+    // no custom headers) so no preflight is triggered.
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
     });
-    document.getElementById('successId').textContent = specimenId;
-    document.getElementById('successEmail').textContent = email;
-    regForm.style.display = 'none';
-    successState.classList.add('show');
+    const text = (await resp.text()).trim();
+
+    if(text === 'ok'){
+      document.getElementById('successId').textContent = specimenId;
+      document.getElementById('successEmail').textContent = email;
+      renderSuccessSummary(payload, specimenId, email);
+      regForm.style.display = 'none';
+      submissionComplete = true;
+      successState.classList.add('show');
+    } else if(text === 'duplicate'){
+      showAlreadyRegistered(specimenId, null);
+    } else if(text === 'missing id'){
+      formError.textContent = 'Department ID was missing from the submission — please re-enter it and try again.';
+      formError.style.display = 'block';
+      submissionInFlight = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Registration';
+    } else {
+      // Covers "error: ..." from the backend and any unexpected response body.
+      formError.textContent = 'The server reported a problem saving your registration. Please try again in a moment, or contact the association if this keeps happening.';
+      formError.style.display = 'block';
+      submissionInFlight = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Registration';
+    }
   } catch(err){
     formError.textContent = 'Something went wrong sending your registration. Please check your connection and try again.';
     formError.style.display = 'block';
+    submissionInFlight = false;
     submitBtn.disabled = false;
     submitBtn.textContent = 'Submit Registration';
+  }
+});
+
+/* ============ SUCCESS SUMMARY + PDF DOWNLOAD ============ */
+function renderSuccessSummary(payload, specimenId, email){
+  const rows = [
+    ['Department ID', specimenId],
+    ['Name', payload.name],
+    ['Email', email],
+    ['Class', payload.studentClass],
+    ['Mobile', payload.mobile],
+    ['DOB', payload.dob],
+    ['Father', payload.fatherStatus === 'alive' ? (payload.fatherName + ' · ' + payload.fatherMobile) : 'Not alive'],
+    ['Mother', payload.motherStatus === 'alive' ? (payload.motherName + ' · ' + payload.motherMobile) : 'Not alive'],
+  ];
+  if(payload.guardianName){
+    rows.push(['Guardian', payload.guardianName + ' (' + payload.guardianRelation + ') · ' + payload.guardianMobile]);
+  }
+  rows.push(['Address', payload.address]);
+  rows.push(['Pincode', payload.pincode]);
+  rows.push(['District', payload.district]);
+  rows.push(['State', payload.state]);
+
+  document.getElementById('successSummary').innerHTML = rows
+    .map(([k,v])=>`<div><b>${k}</b><span>${(v||'—')}</span></div>`)
+    .join('');
+}
+
+document.getElementById('downloadPdfBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('downloadPdfBtn');
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = 'Preparing PDF…';
+  try{
+    const target = document.getElementById('success');
+    const canvas = await html2canvas(target, { backgroundColor: '#ffffff', scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    const idText = document.getElementById('successId').textContent || 'registration';
+    pdf.save(idText + '-registration.pdf');
+  } catch(err){
+    alert('Could not generate the PDF. Please take a screenshot instead, or try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 });
 </script>

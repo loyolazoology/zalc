@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="https://static.wixstatic.com/media/81ba89_514c18d8af5e4574b4812e7d27775511~mv2.png">
 <title>Student Registration</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0A1F3D; --ink-deep:#050F1F; --ink-soft:#3C4E65;
+    --ink:#0A1F3D; --ink-deep:#050F1F; --ink-soft:#14181F;
     --gold:#C9A227; --gold-deep:#9C7C15; --gold-light:#E4C660;
     --cream:#FFFFFF; --parchment:#F3EFE1; --parchment-deep:#E9E0C4;
     --line:#D6CBA0; --error:#B3261E; --ok:#3E6B2C; --ok-bg:#EAF3E4;
@@ -48,10 +47,10 @@
   }
   .crest img{width:100%;height:100%;object-fit:contain;border-radius:4px;display:block;}
   .assoc-name{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(16px,4.4vw,19px);line-height:1.25;margin:0;position:relative;z-index:1;}
-  .dept-name{font-size:11px;color:#C9D2E0;margin:5px 0 0;line-height:1.55;font-weight:500;text-transform:none;position:relative;z-index:1;}
+  .dept-name{font-size:11px;color:#D9E0EB;margin:5px 0 0;line-height:1.55;font-weight:500;text-transform:none;position:relative;z-index:1;}
   .statusbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink-deep);color:var(--cream);
     padding:11px clamp(18px,5vw,28px);font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:1px;border-top:1px solid rgba(255,255,255,0.08);text-transform:uppercase;}
-  .statusbar .now{opacity:0.75;}
+  .statusbar .now{opacity:0.85;}
   .statusbar .left{color:var(--gold-light);font-weight:600;transition:color .25s ease;}
   .statusbar .left.urgent{color:#E4756A;animation:pulseUrgent 1.4s ease-in-out infinite;}
   @keyframes pulseUrgent{0%,100%{opacity:1;}50%{opacity:.55;}}
@@ -60,8 +59,8 @@
   .ledger-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.8px;color:var(--gold-deep);font-weight:600;margin:0 0 4px;text-transform:uppercase;}
   .ledger-sub{font-family:'Fraunces',serif;font-size:clamp(19px,5vw,22px);font-weight:500;margin:0 0 22px;color:var(--ink);}
   .field{margin-bottom:24px;}
-  .field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;color:var(--ink-soft);font-weight:600;margin-bottom:9px;text-transform:uppercase;}
-  .field .hint{font-size:12px;color:var(--ink-soft);opacity:0.85;margin-top:7px;line-height:1.55;text-transform:none;}
+  .field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;color:var(--ink-soft);font-weight:700;margin-bottom:9px;text-transform:uppercase;}
+  .field .hint{font-size:12px;color:var(--ink-soft);opacity:0.9;margin-top:7px;line-height:1.55;text-transform:none;}
   .field .err{font-size:12px;color:var(--error);margin-top:7px;display:none;font-weight:600;}
   .field.invalid .err{display:block;animation:fieldIn .25s ease both;}
   input[type=text],input[type=tel],input[type=date],textarea,select{
@@ -69,11 +68,12 @@
     font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);outline:none;
     transition:border-color .15s,background .15s,box-shadow .15s;
   }
+  input::placeholder, textarea::placeholder{color:#4A4A4A;opacity:1;}
   textarea{resize:vertical;min-height:70px;}
-  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%233C4E65' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23141821' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
   input:focus,textarea:focus,select:focus{border-color:var(--gold-deep);background:var(--cream);box-shadow:0 0 0 3px rgba(201,162,39,0.15);}
   .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--error);}
-  input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed;background:var(--parchment-deep);}
+  input:disabled,select:disabled,textarea:disabled{opacity:1;color:var(--ink);cursor:not-allowed;background:var(--parchment-deep);}
   .specimen-row{display:flex;align-items:center;gap:8px;}
   .segment{flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;letter-spacing:2px;padding:13px 6px;
     background:var(--parchment);border:1.5px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink);user-select:none;text-transform:uppercase;
@@ -83,7 +83,7 @@
   .segment.filled-ok{border-color:var(--gold-deep);background:#FBF4DE;}
   .segment.pop{animation:segPop .32s cubic-bezier(.34,1.56,.64,1);}
   @keyframes segPop{0%{transform:scale(1);}45%{transform:scale(1.08);}100%{transform:scale(1);}}
-  .segment .ph{opacity:0.35;font-weight:500;}
+  .segment .ph{opacity:0.45;font-weight:500;}
   .hyphen{font-family:'IBM Plex Mono',monospace;font-size:19px;color:var(--ink-soft);font-weight:600;}
   @keyframes shake{10%,90%{transform:translateX(-1px);}20%,80%{transform:translateX(2px);}30%,50%,70%{transform:translateX(-4px);}40%,60%{transform:translateX(4px);}}
   .shake{animation:shake .4s;}
@@ -109,6 +109,8 @@
   @keyframes idPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,0.22);}50%{box-shadow:0 0 0 5px rgba(201,162,39,0.12);}}
   .gated-fields{display:none;}
   .gated-fields.revealed{display:block;animation:riseIn .45s cubic-bezier(.2,.8,.3,1) both;}
+  .step-block{display:none;}
+  .step-block.revealed{display:block;animation:riseIn .45s cubic-bezier(.2,.8,.3,1) both;}
   .autogen{width:100%;background:#EFE7CB;border:1.5px dashed var(--line);border-radius:8px;padding:13px 14px;
     font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink-soft);word-break:break-all;transition:border-color .2s,background .2s,color .2s;}
   .autogen.ready{color:var(--ink);border-style:solid;border-color:var(--gold-deep);background:#FBF4DE;text-transform:lowercase;}
@@ -150,8 +152,8 @@
   .success-summary{text-align:left;background:var(--parchment);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:18px 0;font-size:13px;line-height:1.9;}
   .success-summary div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:4px 0;}
   .success-summary div:last-child{border-bottom:none;}
-  .success-summary b{color:var(--ink-soft);font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
-  .success-summary span{color:var(--ink);text-align:right;word-break:break-word;}
+  .success-summary b{color:var(--ink-soft);font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
+  .success-summary span{color:var(--ink);text-align:right;word-break:break-word;font-weight:600;}
   .pdf-btn{width:100%;background:var(--cream);color:var(--ink);border:1.5px solid var(--gold-deep);border-radius:9px;padding:14px;font-family:'IBM Plex Mono',monospace;
     font-size:12.5px;letter-spacing:1.3px;font-weight:600;cursor:pointer;margin-top:14px;text-transform:uppercase;transition:background .15s,transform .1s;}
   .pdf-btn:hover:not(:disabled){background:var(--parchment-deep);}
@@ -171,7 +173,7 @@
   .closed .badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2px;font-weight:600;color:var(--gold-light);background:var(--ink-deep);border-radius:8px;padding:9px 16px;text-transform:uppercase;}
   .closed h3{font-family:'Fraunces',serif;font-size:21px;font-weight:500;margin:18px 0 8px;}
   .closed p{font-size:13px;color:var(--ink-soft);line-height:1.7;text-transform:none;}
-  .footer-note{text-align:center;font-size:11px;color:var(--ink-soft);opacity:0.7;margin-top:18px;line-height:1.6;}
+  .footer-note{text-align:center;font-size:11px;color:var(--ink-soft);opacity:0.85;margin-top:18px;line-height:1.6;}
   .modal-backdrop{position:fixed;inset:0;background:rgba(5,15,31,0.62);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;backdrop-filter:blur(2px);}
   .modal{background:var(--cream);border-radius:14px;max-width:440px;width:100%;padding:clamp(24px,6vw,30px) clamp(20px,5.5vw,28px) clamp(22px,5vw,26px);
     box-shadow:0 30px 60px -20px rgba(5,15,31,0.5);border-top:5px solid var(--gold);position:relative;animation:modalIn .35s cubic-bezier(.2,.9,.3,1);max-height:90vh;overflow-y:auto;}
@@ -241,141 +243,183 @@
 
       <div class="gated-fields" id="gatedFields">
 
+        <!-- STEP 1: NAME -->
         <div class="field" id="field-name">
           <label>Name</label>
           <input type="text" id="name" autocomplete="name" placeholder="Full name as per college records">
           <p class="err" id="err-name">Enter your full name (at least 2 characters).</p>
         </div>
 
-        <div class="field" id="field-class">
-          <label>Class</label>
-          <select id="studentClass"><option value="">Select class</option></select>
-          <p class="err" id="err-class">Please select your class.</p>
-        </div>
-
-        <div class="field">
-          <label>College Email <span style="opacity:.6;font-weight:500;">(auto-generated)</span></label>
-          <div class="autogen" id="autoEmail">Complete the Department ID above</div>
-        </div>
-
-        <div class="field" id="field-mobile">
-          <label>Contact Number</label>
-          <input type="tel" id="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-          <p class="err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
-        </div>
-
-        <div class="field" id="field-dob">
-          <label>Date of Birth</label>
-          <input type="date" id="dob" disabled>
-          <p class="err" id="err-dob">Please select your date of birth.</p>
-          <p class="hint" id="dobLockHint">Enter a valid 10-digit contact number above to continue.</p>
-        </div>
-
-        <div class="divider"><div class="line"></div><span>Family Details</span><div class="line"></div></div>
-
-        <div class="field" id="field-father-status">
-          <label>Father</label>
-          <div class="toggle-group">
-            <div class="toggle-btn" data-parent="father" data-val="alive">Alive</div>
-            <div class="toggle-btn" data-parent="father" data-val="notalive">Not Alive</div>
+        <!-- STEP 2: CLASS + BATCH CODE + EMAIL -->
+        <div class="step-block" id="step-class">
+          <div class="two-col">
+            <div class="field" id="field-class" style="margin-bottom:0;">
+              <label>Class</label>
+              <select id="studentClass"><option value="">Select class</option></select>
+              <p class="err" id="err-class">Please select your class.</p>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Batch Code</label>
+              <input type="text" id="batchCodeDisplay" disabled value="—" style="font-family:'IBM Plex Mono',monospace;font-weight:700;text-align:center;letter-spacing:1px;">
+              <p class="hint">Auto-filled from your Department ID.</p>
+            </div>
           </div>
-          <p class="err" id="err-father-status">Please select Father's status.</p>
-          <div class="subfields" id="fatherSub">
+
+          <div class="field" style="margin-top:20px;">
+            <label>College Email <span style="opacity:.75;font-weight:500;">(auto-generated)</span></label>
+            <div class="autogen" id="autoEmail">Complete the Department ID above</div>
+          </div>
+        </div>
+
+        <!-- STEP 3: MOBILE -->
+        <div class="step-block" id="step-mobile">
+          <div class="field" id="field-mobile">
+            <label>Contact Number</label>
+            <input type="tel" id="mobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+            <p class="err" id="err-mobile">Enter a valid 10-digit mobile number.</p>
+          </div>
+        </div>
+
+        <!-- STEP 4: DOB -->
+        <div class="step-block" id="step-dob">
+          <div class="field" id="field-dob">
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+            <p class="err" id="err-dob">Please select your date of birth.</p>
+          </div>
+        </div>
+
+        <!-- STEP 5: FAMILY -->
+        <div class="step-block" id="step-family">
+          <div class="divider"><div class="line"></div><span>Family Details</span><div class="line"></div></div>
+
+          <div class="field" id="field-father-status">
+            <label>Father</label>
+            <div class="toggle-group">
+              <div class="toggle-btn" data-parent="father" data-val="alive">Alive</div>
+              <div class="toggle-btn" data-parent="father" data-val="notalive">Not Alive</div>
+            </div>
+            <p class="err" id="err-father-status">Please select Father's status.</p>
+            <div class="subfields" id="fatherSub">
+              <div class="field" style="margin-bottom:14px;">
+                <label>Father's Name</label>
+                <input type="text" id="fatherName" placeholder="Father's full name">
+                <p class="err" id="err-fatherName">Enter father's full name.</p>
+              </div>
+              <div class="field" id="field-father-mobile" style="margin-bottom:0;display:none;">
+                <label>Father's Contact Number</label>
+                <input type="tel" id="fatherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+                <p class="err" id="err-fatherMobile">Enter a valid 10-digit mobile number.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" id="field-mother-status">
+            <label>Mother</label>
+            <div class="toggle-group">
+              <div class="toggle-btn" data-parent="mother" data-val="alive">Alive</div>
+              <div class="toggle-btn" data-parent="mother" data-val="notalive">Not Alive</div>
+            </div>
+            <p class="err" id="err-mother-status">Please select Mother's status.</p>
+            <div class="subfields" id="motherSub">
+              <div class="field" style="margin-bottom:14px;">
+                <label>Mother's Name</label>
+                <input type="text" id="motherName" placeholder="Mother's full name">
+                <p class="err" id="err-motherName">Enter mother's full name.</p>
+              </div>
+              <div class="field" id="field-mother-mobile" style="margin-bottom:0;display:none;">
+                <label>Mother's Contact Number</label>
+                <input type="tel" id="motherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+                <p class="err" id="err-motherMobile">Enter a valid 10-digit mobile number.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field" id="field-guardian" style="display:none;">
+            <label>Guardian Details</label>
             <div class="field" style="margin-bottom:14px;">
-              <label>Father's Name</label>
-              <input type="text" id="fatherName" placeholder="Father's full name">
-              <p class="err" id="err-fatherName">Enter father's full name.</p>
+              <input type="text" id="guardianName" placeholder="Guardian's full name">
+              <p class="err" id="err-guardianName">Enter guardian's full name.</p>
             </div>
-            <div class="field" id="field-father-mobile" style="margin-bottom:0;">
-              <label>Father's Contact Number</label>
-              <input type="tel" id="fatherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-              <p class="err" id="err-fatherMobile">Enter a valid 10-digit mobile number.</p>
+            <div class="field" id="field-guardian-relation" style="margin-bottom:14px;">
+              <select id="guardianRelationSelect">
+                <option value="">Select relation to student</option>
+                <option value="Uncle">Uncle</option>
+                <option value="Aunt">Aunt</option>
+                <option value="Elder Brother">Elder Brother</option>
+                <option value="Elder Sister">Elder Sister</option>
+                <option value="Grandfather">Grandfather</option>
+                <option value="Grandmother">Grandmother</option>
+                <option value="Legal Guardian">Legal Guardian</option>
+                <option value="Other">Other (please specify)</option>
+              </select>
+              <input type="text" id="guardianRelationOther" placeholder="Please specify relation to student" style="display:none;margin-top:10px;">
+              <p class="err" id="err-guardianRelation">Please select or specify guardian's relation to student.</p>
+            </div>
+            <div class="field" id="field-guardian-mobile" style="margin-bottom:0;">
+              <label>Guardian's Contact Number</label>
+              <input type="tel" id="guardianMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+              <p class="err" id="err-guardianMobile">Enter a valid 10-digit mobile number.</p>
+            </div>
+            <p class="hint">Since both parents are recorded as not alive, please provide guardian details.</p>
+          </div>
+        </div>
+
+        <!-- STEP 6: ADDRESS -->
+        <div class="step-block" id="step-address">
+          <div class="divider"><div class="line"></div><span>Address</span><div class="line"></div></div>
+          <div class="field" id="field-address">
+            <label>Address</label>
+            <textarea id="address" placeholder="House no., street, area"></textarea>
+            <p class="err" id="err-address">Enter your address (at least 4 characters).</p>
+          </div>
+        </div>
+
+        <!-- STEP 7: PINCODE / DISTRICT / STATE -->
+        <div class="step-block" id="step-location">
+          <div class="field" id="field-pincode">
+            <label>Pincode</label>
+            <input type="text" id="pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
+            <p class="hint" id="pincodeStatus">State and district fill in automatically.</p>
+            <p class="err" id="err-pincode">Enter a valid 6-digit pincode.</p>
+          </div>
+
+          <div class="two-col">
+            <div class="field" id="field-district">
+              <label>District</label>
+              <input type="text" id="district" placeholder="District">
+              <p class="err" id="err-district">Required.</p>
+            </div>
+            <div class="field" id="field-state">
+              <label>State</label>
+              <input type="text" id="state" placeholder="State">
+              <p class="err" id="err-state">Required.</p>
             </div>
           </div>
         </div>
 
-        <div class="field" id="field-mother-status">
-          <label>Mother</label>
-          <div class="toggle-group">
-            <div class="toggle-btn" data-parent="mother" data-val="alive">Alive</div>
-            <div class="toggle-btn" data-parent="mother" data-val="notalive">Not Alive</div>
-          </div>
-          <p class="err" id="err-mother-status">Please select Mother's status.</p>
-          <div class="subfields" id="motherSub">
-            <div class="field" style="margin-bottom:14px;">
-              <label>Mother's Name</label>
-              <input type="text" id="motherName" placeholder="Mother's full name">
-              <p class="err" id="err-motherName">Enter mother's full name.</p>
+        <!-- STEP 8: PHOTO -->
+        <div class="step-block" id="step-photo">
+          <div class="field" id="field-photo" style="display:none;">
+            <label>Profile Photo</label>
+            <div class="dropzone" id="dropzone">
+              <div class="dropzone-label"><b>Tap to upload</b><br>the same photo as on your Student ERP profile</div>
+              <input type="file" id="photoFile" accept="image/png,image/jpeg" style="display:none;">
             </div>
-            <div class="field" id="field-mother-mobile" style="margin-bottom:0;">
-              <label>Mother's Contact Number</label>
-              <input type="tel" id="motherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-              <p class="err" id="err-motherMobile">Enter a valid 10-digit mobile number.</p>
+            <div class="file-preview" id="filePreview">
+              <img class="icon" id="fileIcon" src="" alt="">
+              <div class="meta" id="fileMeta"></div>
             </div>
+            <p class="hint">JPG or PNG only, max <span id="maxFileLabel">10</span>&nbsp;MB.</p>
+            <p class="err" id="err-photo">File is too large or an unsupported type.</p>
           </div>
         </div>
 
-        <div class="field" id="field-guardian" style="display:none;">
-          <label>Guardian Details</label>
-          <div class="field" style="margin-bottom:14px;">
-            <input type="text" id="guardianName" placeholder="Guardian's full name">
-            <p class="err" id="err-guardianName">Enter guardian's full name.</p>
-          </div>
-          <div class="field" style="margin-bottom:14px;">
-            <input type="text" id="guardianRelation" placeholder="Relation to student (e.g. Uncle, Elder Brother)">
-            <p class="err" id="err-guardianRelation">Enter guardian's relation to student.</p>
-          </div>
-          <div class="field" id="field-guardian-mobile" style="margin-bottom:0;">
-            <input type="tel" id="guardianMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-            <p class="err" id="err-guardianMobile">Enter a valid 10-digit mobile number.</p>
-          </div>
-          <p class="hint">Since both parents are recorded as not alive, please provide guardian details.</p>
+        <!-- STEP 9: SUBMIT -->
+        <div class="step-block" id="step-submit">
+          <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Registration</button>
+          <p class="form-error" id="formError"></p>
         </div>
-
-        <div class="divider"><div class="line"></div><span>Address</span><div class="line"></div></div>
-
-        <div class="field" id="field-address">
-          <label>Address</label>
-          <textarea id="address" placeholder="House no., street, area"></textarea>
-          <p class="err" id="err-address">Enter your address (at least 4 characters).</p>
-        </div>
-
-        <div class="field" id="field-pincode">
-          <label>Pincode</label>
-          <input type="text" id="pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
-          <p class="hint" id="pincodeStatus">State and district fill in automatically.</p>
-          <p class="err" id="err-pincode">Enter a valid 6-digit pincode.</p>
-        </div>
-
-        <div class="two-col">
-          <div class="field" id="field-district">
-            <label>District</label>
-            <input type="text" id="district" placeholder="District">
-            <p class="err" id="err-district">Required.</p>
-          </div>
-          <div class="field" id="field-state">
-            <label>State</label>
-            <input type="text" id="state" placeholder="State">
-            <p class="err" id="err-state">Required.</p>
-          </div>
-        </div>
-
-        <div class="field" id="field-photo" style="display:none;">
-          <label>Profile Photo</label>
-          <div class="dropzone" id="dropzone">
-            <div class="dropzone-label"><b>Tap to upload</b><br>the same photo as on your Student ERP profile</div>
-            <input type="file" id="photoFile" accept="image/png,image/jpeg" style="display:none;">
-          </div>
-          <div class="file-preview" id="filePreview">
-            <img class="icon" id="fileIcon" src="" alt="">
-            <div class="meta" id="fileMeta"></div>
-          </div>
-          <p class="hint">JPG or PNG only, max <span id="maxFileLabel">10</span>&nbsp;MB.</p>
-          <p class="err" id="err-photo">File is too large or an unsupported type.</p>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Registration</button>
-        <p class="form-error" id="formError"></p>
       </div>
     </form>
 
@@ -626,6 +670,15 @@ function backspace(seg){ segValues[seg] = segValues[seg].slice(0,-1); renderSegm
 });
 
 const autoEmailEl = document.getElementById('autoEmail');
+const batchCodeDisplay = document.getElementById('batchCodeDisplay');
+
+function updateBatchCodeDisplay(){
+  if(segValues.dept && segValues.letters){
+    batchCodeDisplay.value = segValues.dept + segValues.letters.toUpperCase();
+  } else {
+    batchCodeDisplay.value = '—';
+  }
+}
 
 /* ============ LIVE DUPLICATE-REGISTRATION CHECK ============ */
 const idStatusEl = document.getElementById('idStatus');
@@ -670,6 +723,7 @@ alreadyResetBtn.addEventListener('click', ()=>{
   keypadWrap.classList.remove('open');
   setIdStatus('', '');
   resetGate();
+  updateBatchCodeDisplay();
   validateForm();
   openKeypad('dept');
 });
@@ -748,6 +802,8 @@ function updateIdState(){
   const anyFilledInvalid = (segValues.dept.length===deptCfg.len && !deptOk) || (segValues.letters.length===letCfg.len && !letOk);
   fieldId.classList.toggle('invalid', anyFilledInvalid);
 
+  updateBatchCodeDisplay();
+
   if(allOk){
     const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
     autoEmailEl.textContent = email;
@@ -770,31 +826,19 @@ const nameInput = document.getElementById('name');
 const mobileInput = document.getElementById('mobile');
 const fieldMobile = document.getElementById('field-mobile');
 const dobInput = document.getElementById('dob');
-const dobLockHint = document.getElementById('dobLockHint');
 
 function watchInput(input){ input.addEventListener('input', validateForm); }
 watchInput(document.getElementById('fatherName'));
 watchInput(document.getElementById('motherName'));
 watchInput(document.getElementById('guardianName'));
-watchInput(document.getElementById('guardianRelation'));
+watchInput(document.getElementById('guardianRelationOther'));
 watchInput(document.getElementById('address'));
 watchInput(document.getElementById('district'));
 watchInput(document.getElementById('state'));
 
-/* --- Live "10-digit" gating: DOB (and everything after it) stays locked
-   until the student's own mobile number is a valid 10-digit number. --- */
 function isValidMobile(v){ return /^[6-9]\d{9}$/.test(v); }
 
-function updateMobileGate(){
-  const val = mobileInput.value;
-  const ok = isValidMobile(val);
-  dobInput.disabled = !ok;
-  dobLockHint.style.display = ok ? 'none' : '';
-  if(!ok) dobInput.value = '';
-}
-
 nameInput.addEventListener('input', ()=>{
-  const errEl = document.getElementById('err-name');
   document.getElementById('field-name').classList.toggle('invalid', nameInput.value.length>0 && nameInput.value.trim().length<=1);
   validateForm();
 });
@@ -815,7 +859,6 @@ mobileInput.addEventListener('input', ()=>{
   } else {
     fieldMobile.classList.remove('invalid');
   }
-  updateMobileGate();
   validateForm();
 });
 mobileInput.addEventListener('blur', ()=>{
@@ -868,6 +911,8 @@ const parentStatus = { father: '', mother: '' };
 const fatherSub = document.getElementById('fatherSub');
 const motherSub = document.getElementById('motherSub');
 const guardianField = document.getElementById('field-guardian');
+const guardianRelationSelect = document.getElementById('guardianRelationSelect');
+const guardianRelationOther = document.getElementById('guardianRelationOther');
 
 document.querySelectorAll('.toggle-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -876,19 +921,44 @@ document.querySelectorAll('.toggle-btn').forEach(btn=>{
     parentStatus[parent] = val;
     document.getElementById('field-' + parent + '-status').classList.remove('invalid');
     document.querySelectorAll(`.toggle-btn[data-parent="${parent}"]`).forEach(b=>b.classList.toggle('selected', b===btn));
+
+    // Name is always required once a status is chosen; mobile only if alive.
     const sub = parent === 'father' ? fatherSub : motherSub;
-    sub.classList.toggle('open', val === 'alive');
+    sub.classList.add('open');
+    const mobileField = document.getElementById('field-' + parent + '-mobile');
+    if(val === 'alive'){
+      mobileField.style.display = '';
+    } else {
+      mobileField.style.display = 'none';
+      document.getElementById(parent + 'Mobile').value = '';
+    }
+
     updateGuardianVisibility();
     validateForm();
   });
 });
+
+guardianRelationSelect.addEventListener('change', ()=>{
+  const isOther = guardianRelationSelect.value === 'Other';
+  guardianRelationOther.style.display = isOther ? '' : 'none';
+  if(!isOther) guardianRelationOther.value = '';
+  document.getElementById('field-guardian-relation').classList.remove('invalid');
+  validateForm();
+});
+
+function getGuardianRelation(){
+  if(guardianRelationSelect.value === 'Other') return guardianRelationOther.value.trim();
+  return guardianRelationSelect.value;
+}
 
 function updateGuardianVisibility(){
   const bothNotAlive = parentStatus.father === 'notalive' && parentStatus.mother === 'notalive';
   guardianField.style.display = bothNotAlive ? '' : 'none';
   if(!bothNotAlive){
     document.getElementById('guardianName').value = '';
-    document.getElementById('guardianRelation').value = '';
+    guardianRelationSelect.value = '';
+    guardianRelationOther.value = '';
+    guardianRelationOther.style.display = 'none';
     document.getElementById('guardianMobile').value = '';
   }
 }
@@ -949,12 +1019,12 @@ function needsPhoto(){
   return true;
 }
 function updatePhotoRequirement(){
-  fieldPhoto.style.display = needsPhoto() ? '' : 'none';
   if(!needsPhoto()){
     fileBase64 = null; fileName = null; fileMime = null;
     filePreview.classList.remove('show');
     dropzone.classList.remove('has-file');
   }
+  validateForm();
 }
 
 /* ============ FILE UPLOAD ============ */
@@ -1004,52 +1074,78 @@ photoFile.addEventListener('change', ()=>{
   reader.readAsDataURL(f);
 });
 
-/* ============ VALIDATION ============ */
+/* ============ VALIDATION + STEP-BY-STEP REVEAL ============ */
 const submitBtn = document.getElementById('submitBtn');
+
 function validateForm(){
   const idOk = segValues.dept.length===2 && SEG_CONFIG.dept.validSet.includes(segValues.dept)
             && segValues.letters.length===3 && SEG_CONFIG.letters.validSet.includes(segValues.letters)
             && segValues.serial.length===3;
+
   const nameOk = nameInput.value.trim().length > 1;
+  document.getElementById('step-class').classList.toggle('revealed', nameOk);
+
   const classOk = classSelect.value !== '';
+  document.getElementById('step-mobile').classList.toggle('revealed', nameOk && classOk);
+
   const mobileOk = isValidMobile(mobileInput.value);
-  updateMobileGate();
-  const dobOk = mobileOk && !!dobInput.value;
+  document.getElementById('step-dob').classList.toggle('revealed', nameOk && classOk && mobileOk);
 
+  const dobOk = !!dobInput.value;
+  document.getElementById('step-family').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk);
+
+  // --- Father ---
   const fatherStatusOk = parentStatus.father !== '';
-  let fatherOk = fatherStatusOk;
-  if(parentStatus.father === 'alive'){
+  let fatherOk = false;
+  if(fatherStatusOk){
     const fName = document.getElementById('fatherName').value.trim().length > 1;
-    const fMobileVal = document.getElementById('fatherMobile').value;
-    const fMobileOk = isValidMobile(fMobileVal);
-    fatherOk = fName && fMobileOk;
+    if(parentStatus.father === 'alive'){
+      fatherOk = fName && isValidMobile(document.getElementById('fatherMobile').value);
+    } else {
+      fatherOk = fName;
+    }
   }
 
+  // --- Mother ---
   const motherStatusOk = parentStatus.mother !== '';
-  let motherOk = motherStatusOk;
-  if(parentStatus.mother === 'alive'){
+  let motherOk = false;
+  if(motherStatusOk){
     const mName = document.getElementById('motherName').value.trim().length > 1;
-    const mMobileVal = document.getElementById('motherMobile').value;
-    const mMobileOk = isValidMobile(mMobileVal);
-    motherOk = mName && mMobileOk;
+    if(parentStatus.mother === 'alive'){
+      motherOk = mName && isValidMobile(document.getElementById('motherMobile').value);
+    } else {
+      motherOk = mName;
+    }
   }
 
-  let guardianOk = true;
+  // --- Guardian (only when both parents not alive) ---
   const bothNotAlive = parentStatus.father === 'notalive' && parentStatus.mother === 'notalive';
+  let guardianOk = true;
   if(bothNotAlive){
     const gName = document.getElementById('guardianName').value.trim().length > 1;
-    const gRel = document.getElementById('guardianRelation').value.trim().length > 1;
-    const gMobileVal = document.getElementById('guardianMobile').value;
-    const gMobileOk = isValidMobile(gMobileVal);
-    guardianOk = gName && gRel && gMobileOk;
+    const gRelSelectVal = guardianRelationSelect.value;
+    const gRelOk = gRelSelectVal !== '' && (gRelSelectVal !== 'Other' || guardianRelationOther.value.trim().length > 1);
+    const gMobileOk = isValidMobile(document.getElementById('guardianMobile').value);
+    guardianOk = gName && gRelOk && gMobileOk;
   }
 
+  const familyOk = fatherOk && motherOk && guardianOk;
+  document.getElementById('step-address').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk && familyOk);
+
   const addressOk = document.getElementById('address').value.trim().length > 3;
+  document.getElementById('step-location').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk && familyOk && addressOk);
+
   const pincodeOk = /^\d{6}$/.test(pincodeInput.value);
   const districtOk = districtInput.value.trim().length > 1;
   const stateOk = stateInput.value.trim().length > 1;
+  const locationOk = pincodeOk && districtOk && stateOk;
+
+  const photoStepUnlocked = nameOk && classOk && mobileOk && dobOk && familyOk && addressOk && locationOk;
+  document.getElementById('step-photo').classList.toggle('revealed', photoStepUnlocked);
+  fieldPhoto.style.display = (photoStepUnlocked && needsPhoto()) ? '' : 'none';
 
   const photoOk = !needsPhoto() || !!fileBase64;
+  document.getElementById('step-submit').classList.toggle('revealed', photoStepUnlocked && photoOk);
 
   submitBtn.disabled = !(idOk && idVerified && nameOk && classOk && mobileOk && dobOk &&
     fatherOk && motherOk && guardianOk && addressOk && pincodeOk && districtOk && stateOk && photoOk) || isClosed();
@@ -1072,6 +1168,7 @@ regForm.addEventListener('submit', async (e)=>{
 
   const specimenId = `${segValues.dept}-${segValues.letters}-${segValues.serial}`;
   const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
+  const batchCode = (segValues.dept && segValues.letters) ? (segValues.dept + segValues.letters.toUpperCase()) : '';
 
   try{
     const recheck = await checkRegistrationStatus(specimenId);
@@ -1085,18 +1182,18 @@ regForm.addEventListener('submit', async (e)=>{
   submitBtn.textContent = 'Submitting…';
 
   const payload = {
-    specimenId, name: nameInput.value.trim(), email,
+    specimenId, batchCode, name: nameInput.value.trim(), email,
     studentClass: classSelect.value,
     mobile: mobileInput.value,
     dob: dobInput.value,
     fatherStatus: parentStatus.father,
-    fatherName: parentStatus.father === 'alive' ? document.getElementById('fatherName').value.trim() : '',
+    fatherName: parentStatus.father ? document.getElementById('fatherName').value.trim() : '',
     fatherMobile: parentStatus.father === 'alive' ? document.getElementById('fatherMobile').value : '',
     motherStatus: parentStatus.mother,
-    motherName: parentStatus.mother === 'alive' ? document.getElementById('motherName').value.trim() : '',
+    motherName: parentStatus.mother ? document.getElementById('motherName').value.trim() : '',
     motherMobile: parentStatus.mother === 'alive' ? document.getElementById('motherMobile').value : '',
     guardianName: guardianField.style.display !== 'none' ? document.getElementById('guardianName').value.trim() : '',
-    guardianRelation: guardianField.style.display !== 'none' ? document.getElementById('guardianRelation').value.trim() : '',
+    guardianRelation: guardianField.style.display !== 'none' ? getGuardianRelation() : '',
     guardianMobile: guardianField.style.display !== 'none' ? document.getElementById('guardianMobile').value : '',
     address: document.getElementById('address').value.trim(),
     pincode: pincodeInput.value,
@@ -1168,13 +1265,14 @@ regForm.addEventListener('submit', async (e)=>{
 function renderSuccessSummary(payload, specimenId, email){
   const rows = [
     ['Department ID', specimenId],
+    ['Batch Code', payload.batchCode],
     ['Name', payload.name],
     ['Email', email],
     ['Class', payload.studentClass],
     ['Mobile', payload.mobile],
     ['DOB', payload.dob],
-    ['Father', payload.fatherStatus === 'alive' ? (payload.fatherName + ' · ' + payload.fatherMobile) : 'Not alive'],
-    ['Mother', payload.motherStatus === 'alive' ? (payload.motherName + ' · ' + payload.motherMobile) : 'Not alive'],
+    ['Father', payload.fatherStatus === 'alive' ? (payload.fatherName + ' · ' + payload.fatherMobile) : (payload.fatherName + ' (Not alive)')],
+    ['Mother', payload.motherStatus === 'alive' ? (payload.motherName + ' · ' + payload.motherMobile) : (payload.motherName + ' (Not alive)')],
   ];
   if(payload.guardianName){
     rows.push(['Guardian', payload.guardianName + ' (' + payload.guardianRelation + ') · ' + payload.guardianMobile]);

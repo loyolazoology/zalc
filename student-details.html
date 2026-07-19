@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,6 +155,8 @@
   .success-summary div:last-child{border-bottom:none;}
   .success-summary b{color:var(--ink-soft);font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
   .success-summary span{color:var(--ink);text-align:right;word-break:break-word;font-weight:600;}
+  .correction-note{text-align:left;background:var(--warn-bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 18px;font-size:12.5px;line-height:1.7;color:var(--ink-soft);}
+  .correction-note b{color:var(--ink);}
   .pdf-btn{width:100%;background:var(--cream);color:var(--ink);border:1.5px solid var(--gold-deep);border-radius:9px;padding:14px;font-family:'IBM Plex Mono',monospace;
     font-size:12.5px;letter-spacing:1.3px;font-weight:600;cursor:pointer;margin-top:14px;text-transform:uppercase;transition:background .15s,transform .1s;}
   .pdf-btn:hover:not(:disabled){background:var(--parchment-deep);}
@@ -291,116 +292,7 @@
           </div>
         </div>
 
-        <!-- STEP 5: FAMILY -->
-        <div class="step-block" id="step-family">
-          <div class="divider"><div class="line"></div><span>Family Details</span><div class="line"></div></div>
-
-          <div class="field" id="field-father-status">
-            <label>Father</label>
-            <div class="toggle-group">
-              <div class="toggle-btn" data-parent="father" data-val="alive">Alive</div>
-              <div class="toggle-btn" data-parent="father" data-val="notalive">Not Alive</div>
-            </div>
-            <p class="err" id="err-father-status">Please select Father's status.</p>
-            <div class="subfields" id="fatherSub">
-              <div class="field" style="margin-bottom:14px;">
-                <label>Father's Name</label>
-                <input type="text" id="fatherName" placeholder="Father's full name">
-                <p class="err" id="err-fatherName">Enter father's full name.</p>
-              </div>
-              <div class="field" id="field-father-mobile" style="margin-bottom:0;display:none;">
-                <label>Father's Contact Number</label>
-                <input type="tel" id="fatherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-                <p class="err" id="err-fatherMobile">Enter a valid 10-digit mobile number.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="field" id="field-mother-status">
-            <label>Mother</label>
-            <div class="toggle-group">
-              <div class="toggle-btn" data-parent="mother" data-val="alive">Alive</div>
-              <div class="toggle-btn" data-parent="mother" data-val="notalive">Not Alive</div>
-            </div>
-            <p class="err" id="err-mother-status">Please select Mother's status.</p>
-            <div class="subfields" id="motherSub">
-              <div class="field" style="margin-bottom:14px;">
-                <label>Mother's Name</label>
-                <input type="text" id="motherName" placeholder="Mother's full name">
-                <p class="err" id="err-motherName">Enter mother's full name.</p>
-              </div>
-              <div class="field" id="field-mother-mobile" style="margin-bottom:0;display:none;">
-                <label>Mother's Contact Number</label>
-                <input type="tel" id="motherMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-                <p class="err" id="err-motherMobile">Enter a valid 10-digit mobile number.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="field" id="field-guardian" style="display:none;">
-            <label>Guardian Details</label>
-            <div class="field" style="margin-bottom:14px;">
-              <input type="text" id="guardianName" placeholder="Guardian's full name">
-              <p class="err" id="err-guardianName">Enter guardian's full name.</p>
-            </div>
-            <div class="field" id="field-guardian-relation" style="margin-bottom:14px;">
-              <select id="guardianRelationSelect">
-                <option value="">Select relation to student</option>
-                <option value="Uncle">Uncle</option>
-                <option value="Aunt">Aunt</option>
-                <option value="Elder Brother">Elder Brother</option>
-                <option value="Elder Sister">Elder Sister</option>
-                <option value="Grandfather">Grandfather</option>
-                <option value="Grandmother">Grandmother</option>
-                <option value="Legal Guardian">Legal Guardian</option>
-                <option value="Other">Other (please specify)</option>
-              </select>
-              <input type="text" id="guardianRelationOther" placeholder="Please specify relation to student" style="display:none;margin-top:10px;">
-              <p class="err" id="err-guardianRelation">Please select or specify guardian's relation to student.</p>
-            </div>
-            <div class="field" id="field-guardian-mobile" style="margin-bottom:0;">
-              <label>Guardian's Contact Number</label>
-              <input type="tel" id="guardianMobile" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-              <p class="err" id="err-guardianMobile">Enter a valid 10-digit mobile number.</p>
-            </div>
-            <p class="hint">Since both parents are recorded as not alive, please provide guardian details.</p>
-          </div>
-        </div>
-
-        <!-- STEP 6: ADDRESS -->
-        <div class="step-block" id="step-address">
-          <div class="divider"><div class="line"></div><span>Address</span><div class="line"></div></div>
-          <div class="field" id="field-address">
-            <label>Address</label>
-            <textarea id="address" placeholder="House no., street, area"></textarea>
-            <p class="err" id="err-address">Enter your address (at least 4 characters).</p>
-          </div>
-        </div>
-
-        <!-- STEP 7: PINCODE / DISTRICT / STATE -->
-        <div class="step-block" id="step-location">
-          <div class="field" id="field-pincode">
-            <label>Pincode</label>
-            <input type="text" id="pincode" inputmode="numeric" maxlength="6" placeholder="6-digit pincode">
-            <p class="hint" id="pincodeStatus">State and district fill in automatically.</p>
-            <p class="err" id="err-pincode">Enter a valid 6-digit pincode.</p>
-          </div>
-
-          <div class="two-col">
-            <div class="field" id="field-district">
-              <label>District</label>
-              <input type="text" id="district" placeholder="District">
-              <p class="err" id="err-district">Required.</p>
-            </div>
-            <div class="field" id="field-state">
-              <label>State</label>
-              <input type="text" id="state" placeholder="State">
-              <p class="err" id="err-state">Required.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 8: PHOTO -->
+        <!-- STEP 5: PHOTO -->
         <div class="step-block" id="step-photo">
           <div class="field" id="field-photo" style="display:none;">
             <label>Profile Photo</label>
@@ -417,7 +309,7 @@
           </div>
         </div>
 
-        <!-- STEP 9: SUBMIT -->
+        <!-- STEP 6: SUBMIT -->
         <div class="step-block" id="step-submit">
           <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Registration</button>
           <p class="form-error" id="formError"></p>
@@ -431,6 +323,7 @@
       <p>Your entry has been recorded under <span class="sid" id="successId"></span>.</p>
       <p>A confirmation has been sent to <span class="sid" id="successEmail"></span>.</p>
       <div class="success-summary" id="successSummary"></div>
+      <div class="correction-note">If you spot a mistake in any of the details above, please contact your <b>class representative</b> directly, along with valid supporting documents (e.g. your ID card or admission form), to get it corrected.</div>
       <button type="button" class="pdf-btn" id="downloadPdfBtn">⬇ Download my details as PDF</button>
     </div>
 
@@ -731,12 +624,6 @@ alreadyResetBtn.addEventListener('click', ()=>{
 });
 
 function checkRegistrationStatus(specimenId){
-  // _ts is a cache-buster only — its value is never used server-side. Without
-  // it, browsers (and some CDNs) can serve a stale cached response for this
-  // <script src="..."> GET request, so a student could see "available" for an
-  // ID someone else registered moments earlier. The final decision on
-  // duplicates is always made by doPost on submit, not by this check — this
-  // call only controls whether the form unlocks early for a smoother UX.
   const email = `${segValues.dept}${segValues.letters}${segValues.serial}@${EMAIL_DOMAIN}`;
   return jsonpRequest(APPS_SCRIPT_URL + '?action=check&id=' + encodeURIComponent(specimenId) +
     '&email=' + encodeURIComponent(email) + '&_ts=' + Date.now());
@@ -829,15 +716,6 @@ const mobileInput = document.getElementById('mobile');
 const fieldMobile = document.getElementById('field-mobile');
 const dobInput = document.getElementById('dob');
 
-function watchInput(input){ input.addEventListener('input', validateForm); }
-watchInput(document.getElementById('fatherName'));
-watchInput(document.getElementById('motherName'));
-watchInput(document.getElementById('guardianName'));
-watchInput(document.getElementById('guardianRelationOther'));
-watchInput(document.getElementById('address'));
-watchInput(document.getElementById('district'));
-watchInput(document.getElementById('state'));
-
 function isValidMobile(v){ return /^[6-9]\d{9}$/.test(v); }
 
 nameInput.addEventListener('input', ()=>{
@@ -854,7 +732,7 @@ mobileInput.addEventListener('input', ()=>{
   if(v.length === 0){
     fieldMobile.classList.remove('invalid');
   } else if(v.length < 10){
-    fieldMobile.classList.remove('invalid'); // don't scold mid-typing
+    fieldMobile.classList.remove('invalid');
   } else if(!isValidMobile(v)){
     fieldMobile.classList.add('invalid');
     document.getElementById('err-mobile').textContent = 'That doesn\'t look like a valid Indian mobile number — it must be 10 digits and start with 6, 7, 8 or 9.';
@@ -884,126 +762,6 @@ classSelect.addEventListener('change', ()=>{
   updatePhotoRequirement(); validateForm();
 });
 
-function bindMobile(el, errFieldId, errMsgId){
-  const fieldEl = document.getElementById(errFieldId);
-  el.addEventListener('input', ()=>{
-    el.value = el.value.replace(/\D/g,'').slice(0,10);
-    const v = el.value;
-    if(v.length === 0 || v.length < 10){ fieldEl.classList.remove('invalid'); }
-    else if(!isValidMobile(v)){
-      fieldEl.classList.add('invalid');
-      document.getElementById(errMsgId).textContent = 'That doesn\'t look like a valid Indian mobile number — it must be 10 digits and start with 6, 7, 8 or 9.';
-    } else { fieldEl.classList.remove('invalid'); }
-    validateForm();
-  });
-  el.addEventListener('blur', ()=>{
-    const v = el.value;
-    if(v.length > 0 && v.length < 10){
-      fieldEl.classList.add('invalid');
-      document.getElementById(errMsgId).textContent = 'Enter all 10 digits of the mobile number (' + v.length + '/10 entered).';
-    }
-  });
-}
-bindMobile(document.getElementById('fatherMobile'), 'field-father-mobile', 'err-fatherMobile');
-bindMobile(document.getElementById('motherMobile'), 'field-mother-mobile', 'err-motherMobile');
-bindMobile(document.getElementById('guardianMobile'), 'field-guardian-mobile', 'err-guardianMobile');
-
-/* ============ FATHER / MOTHER TOGGLES + GUARDIAN LOGIC ============ */
-const parentStatus = { father: '', mother: '' };
-const fatherSub = document.getElementById('fatherSub');
-const motherSub = document.getElementById('motherSub');
-const guardianField = document.getElementById('field-guardian');
-const guardianRelationSelect = document.getElementById('guardianRelationSelect');
-const guardianRelationOther = document.getElementById('guardianRelationOther');
-
-document.querySelectorAll('.toggle-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const parent = btn.dataset.parent;
-    const val = btn.dataset.val;
-    parentStatus[parent] = val;
-    document.getElementById('field-' + parent + '-status').classList.remove('invalid');
-    document.querySelectorAll(`.toggle-btn[data-parent="${parent}"]`).forEach(b=>b.classList.toggle('selected', b===btn));
-
-    // Name is always required once a status is chosen; mobile only if alive.
-    const sub = parent === 'father' ? fatherSub : motherSub;
-    sub.classList.add('open');
-    const mobileField = document.getElementById('field-' + parent + '-mobile');
-    if(val === 'alive'){
-      mobileField.style.display = '';
-    } else {
-      mobileField.style.display = 'none';
-      document.getElementById(parent + 'Mobile').value = '';
-    }
-
-    updateGuardianVisibility();
-    validateForm();
-  });
-});
-
-guardianRelationSelect.addEventListener('change', ()=>{
-  const isOther = guardianRelationSelect.value === 'Other';
-  guardianRelationOther.style.display = isOther ? '' : 'none';
-  if(!isOther) guardianRelationOther.value = '';
-  document.getElementById('field-guardian-relation').classList.remove('invalid');
-  validateForm();
-});
-
-function getGuardianRelation(){
-  if(guardianRelationSelect.value === 'Other') return guardianRelationOther.value.trim();
-  return guardianRelationSelect.value;
-}
-
-function updateGuardianVisibility(){
-  const bothNotAlive = parentStatus.father === 'notalive' && parentStatus.mother === 'notalive';
-  guardianField.style.display = bothNotAlive ? '' : 'none';
-  if(!bothNotAlive){
-    document.getElementById('guardianName').value = '';
-    guardianRelationSelect.value = '';
-    guardianRelationOther.value = '';
-    guardianRelationOther.style.display = 'none';
-    document.getElementById('guardianMobile').value = '';
-  }
-}
-
-/* ============ PINCODE AUTO-FILL ============ */
-const pincodeInput = document.getElementById('pincode');
-const districtInput = document.getElementById('district');
-const stateInput = document.getElementById('state');
-const pincodeStatus = document.getElementById('pincodeStatus');
-const fieldPincode = document.getElementById('field-pincode');
-
-pincodeInput.addEventListener('input', ()=>{
-  pincodeInput.value = pincodeInput.value.replace(/\D/g,'').slice(0,6);
-  fieldPincode.classList.remove('invalid');
-  if(pincodeInput.value.length === 6) lookupPincode(pincodeInput.value);
-  validateForm();
-});
-pincodeInput.addEventListener('blur', ()=>{
-  if(pincodeInput.value.length > 0 && pincodeInput.value.length < 6){
-    fieldPincode.classList.add('invalid');
-  }
-});
-
-async function lookupPincode(pin){
-  pincodeStatus.textContent = 'Looking up pincode…';
-  try{
-    const res = await fetch('https://api.postalpincode.in/pincode/' + pin);
-    const data = await res.json();
-    if(data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length){
-      const po = data[0].PostOffice[0];
-      stateInput.value = po.State || '';
-      districtInput.value = po.District || '';
-      pincodeStatus.textContent = 'State and district filled in automatically. Edit if incorrect.';
-    } else {
-      pincodeStatus.textContent = 'Pincode not recognised — please enter State/District manually.';
-      fieldPincode.classList.add('invalid');
-    }
-  } catch(err){
-    pincodeStatus.textContent = 'Could not auto-fill — please enter State/District manually.';
-  }
-  validateForm();
-}
-
 /* ============ PHOTO REQUIREMENT (skip for 1st UG / 1st PG) ============ */
 const fieldPhoto = document.getElementById('field-photo');
 function needsPhoto(){
@@ -1011,11 +769,9 @@ function needsPhoto(){
   if(cls === '') return false;
   const firstYearCode = CONFIG.FIRST_YEAR_CODE ? String(CONFIG.FIRST_YEAR_CODE).trim() : '';
   if(firstYearCode && segValues.dept === firstYearCode){
-    // Current intake year (set in CONFIG.FIRST_YEAR_CODE above) — freshers skip the photo.
     return false;
   }
   if(!firstYearCode){
-    // Fallback if FIRST_YEAR_CODE isn't set: use class name instead.
     return cls !== '1st UG' && cls !== '1st PG';
   }
   return true;
@@ -1094,63 +850,15 @@ function validateForm(){
   document.getElementById('step-dob').classList.toggle('revealed', nameOk && classOk && mobileOk);
 
   const dobOk = !!dobInput.value;
-  document.getElementById('step-family').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk);
 
-  // --- Father ---
-  const fatherStatusOk = parentStatus.father !== '';
-  let fatherOk = false;
-  if(fatherStatusOk){
-    const fName = document.getElementById('fatherName').value.trim().length > 1;
-    if(parentStatus.father === 'alive'){
-      fatherOk = fName && isValidMobile(document.getElementById('fatherMobile').value);
-    } else {
-      fatherOk = fName;
-    }
-  }
-
-  // --- Mother ---
-  const motherStatusOk = parentStatus.mother !== '';
-  let motherOk = false;
-  if(motherStatusOk){
-    const mName = document.getElementById('motherName').value.trim().length > 1;
-    if(parentStatus.mother === 'alive'){
-      motherOk = mName && isValidMobile(document.getElementById('motherMobile').value);
-    } else {
-      motherOk = mName;
-    }
-  }
-
-  // --- Guardian (only when both parents not alive) ---
-  const bothNotAlive = parentStatus.father === 'notalive' && parentStatus.mother === 'notalive';
-  let guardianOk = true;
-  if(bothNotAlive){
-    const gName = document.getElementById('guardianName').value.trim().length > 1;
-    const gRelSelectVal = guardianRelationSelect.value;
-    const gRelOk = gRelSelectVal !== '' && (gRelSelectVal !== 'Other' || guardianRelationOther.value.trim().length > 1);
-    const gMobileOk = isValidMobile(document.getElementById('guardianMobile').value);
-    guardianOk = gName && gRelOk && gMobileOk;
-  }
-
-  const familyOk = fatherOk && motherOk && guardianOk;
-  document.getElementById('step-address').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk && familyOk);
-
-  const addressOk = document.getElementById('address').value.trim().length > 3;
-  document.getElementById('step-location').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk && familyOk && addressOk);
-
-  const pincodeOk = /^\d{6}$/.test(pincodeInput.value);
-  const districtOk = districtInput.value.trim().length > 1;
-  const stateOk = stateInput.value.trim().length > 1;
-  const locationOk = pincodeOk && districtOk && stateOk;
-
-  const photoStepUnlocked = nameOk && classOk && mobileOk && dobOk && familyOk && addressOk && locationOk;
+  const photoStepUnlocked = nameOk && classOk && mobileOk && dobOk;
   document.getElementById('step-photo').classList.toggle('revealed', photoStepUnlocked);
   fieldPhoto.style.display = (photoStepUnlocked && needsPhoto()) ? '' : 'none';
 
   const photoOk = !needsPhoto() || !!fileBase64;
   document.getElementById('step-submit').classList.toggle('revealed', photoStepUnlocked && photoOk);
 
-  submitBtn.disabled = !(idOk && idVerified && nameOk && classOk && mobileOk && dobOk &&
-    fatherOk && motherOk && guardianOk && addressOk && pincodeOk && districtOk && stateOk && photoOk) || isClosed();
+  submitBtn.disabled = !(idOk && idVerified && nameOk && classOk && mobileOk && dobOk && photoOk) || isClosed();
 }
 
 /* ============ SUBMIT ============ */
@@ -1188,19 +896,6 @@ regForm.addEventListener('submit', async (e)=>{
     studentClass: classSelect.value,
     mobile: mobileInput.value,
     dob: dobInput.value,
-    fatherStatus: parentStatus.father,
-    fatherName: parentStatus.father ? document.getElementById('fatherName').value.trim() : '',
-    fatherMobile: parentStatus.father === 'alive' ? document.getElementById('fatherMobile').value : '',
-    motherStatus: parentStatus.mother,
-    motherName: parentStatus.mother ? document.getElementById('motherName').value.trim() : '',
-    motherMobile: parentStatus.mother === 'alive' ? document.getElementById('motherMobile').value : '',
-    guardianName: guardianField.style.display !== 'none' ? document.getElementById('guardianName').value.trim() : '',
-    guardianRelation: guardianField.style.display !== 'none' ? getGuardianRelation() : '',
-    guardianMobile: guardianField.style.display !== 'none' ? document.getElementById('guardianMobile').value : '',
-    address: document.getElementById('address').value.trim(),
-    pincode: pincodeInput.value,
-    district: districtInput.value.trim(),
-    state: stateInput.value.trim(),
     fileName: needsPhoto() ? fileName : '',
     fileMimeType: needsPhoto() ? fileMime : '',
     fileData: needsPhoto() ? fileBase64 : ''
@@ -1216,13 +911,6 @@ regForm.addEventListener('submit', async (e)=>{
   }
 
   try{
-    // NOTE: this is a normal (CORS) request, NOT no-cors — that is deliberate.
-    // With no-cors the response is opaque and the page can never learn whether
-    // the backend actually accepted, rejected as duplicate, or errored — that
-    // was why the old form could show "Registered" for entries the sheet had
-    // already rejected. Apps Script's doPost response is readable as long as
-    // the request stays a "simple request" (hence text/plain content-type,
-    // no custom headers) so no preflight is triggered.
     const resp = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1247,7 +935,6 @@ regForm.addEventListener('submit', async (e)=>{
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit Registration';
     } else {
-      // Covers "error: ..." from the backend and any unexpected response body.
       formError.textContent = 'The server reported a problem saving your registration. Please try again in a moment, or contact the association if this keeps happening.';
       formError.style.display = 'block';
       submissionInFlight = false;
@@ -1272,17 +959,8 @@ function renderSuccessSummary(payload, specimenId, email){
     ['Email', email],
     ['Class', payload.studentClass],
     ['Mobile', payload.mobile],
-    ['DOB', payload.dob],
-    ['Father', payload.fatherStatus === 'alive' ? (payload.fatherName + ' · ' + payload.fatherMobile) : (payload.fatherName + ' (Not alive)')],
-    ['Mother', payload.motherStatus === 'alive' ? (payload.motherName + ' · ' + payload.motherMobile) : (payload.motherName + ' (Not alive)')],
+    ['DOB', payload.dob]
   ];
-  if(payload.guardianName){
-    rows.push(['Guardian', payload.guardianName + ' (' + payload.guardianRelation + ') · ' + payload.guardianMobile]);
-  }
-  rows.push(['Address', payload.address]);
-  rows.push(['Pincode', payload.pincode]);
-  rows.push(['District', payload.district]);
-  rows.push(['State', payload.state]);
 
   document.getElementById('successSummary').innerHTML = rows
     .map(([k,v])=>`<div><b>${k}</b><span>${(v||'—')}</span></div>`)

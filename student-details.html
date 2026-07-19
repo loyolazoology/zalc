@@ -126,16 +126,6 @@
   .subfields.open{display:block;animation:fieldIn .35s ease both;}
   .two-col{display:flex; gap:12px;}
   .two-col > div{flex:1;}
-  .dropzone{border:1.5px dashed var(--line);border-radius:10px;background:var(--parchment);padding:22px 16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;}
-  .dropzone:hover{border-color:var(--gold-deep);transform:translateY(-1px);}
-  .dropzone.has-file{border-style:solid;border-color:var(--gold-deep);background:var(--cream);}
-  .dropzone-label{font-size:13px;color:var(--ink-soft);font-weight:500;}
-  .dropzone-label b{color:var(--ink);}
-  .file-preview{display:none;align-items:center;gap:12px;margin-top:14px;text-align:left;background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:10px;}
-  .file-preview.show{display:flex;animation:fieldIn .3s ease both;}
-  .file-preview img.icon{width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--line);flex:none;background:none;}
-  .file-preview .meta{font-size:12px;color:var(--ink-soft);line-height:1.5;text-transform:none;min-width:0;word-break:break-word;}
-  .file-preview .meta b{color:var(--ink);display:block;font-size:13px;word-break:break-all;}
   .submit-btn{width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:9px;padding:16px;font-family:'IBM Plex Mono',monospace;
     font-size:13px;letter-spacing:1.5px;font-weight:600;cursor:pointer;margin-top:6px;text-transform:uppercase;transition:background .15s,transform .1s,opacity .15s,box-shadow .15s;}
   .submit-btn:hover:not(:disabled){background:var(--ink-deep);box-shadow:0 10px 24px -12px rgba(10,31,61,0.5);transform:translateY(-1px);}
@@ -292,24 +282,7 @@
           </div>
         </div>
 
-        <!-- STEP 5: PHOTO -->
-        <div class="step-block" id="step-photo">
-          <div class="field" id="field-photo" style="display:none;">
-            <label>Profile Photo</label>
-            <div class="dropzone" id="dropzone">
-              <div class="dropzone-label"><b>Tap to upload</b><br>the same photo as on your Student ERP profile</div>
-              <input type="file" id="photoFile" accept="image/png,image/jpeg" style="display:none;">
-            </div>
-            <div class="file-preview" id="filePreview">
-              <img class="icon" id="fileIcon" src="" alt="">
-              <div class="meta" id="fileMeta"></div>
-            </div>
-            <p class="hint">JPG or PNG only, max <span id="maxFileLabel">10</span>&nbsp;MB.</p>
-            <p class="err" id="err-photo">File is too large or an unsupported type.</p>
-          </div>
-        </div>
-
-        <!-- STEP 6: SUBMIT -->
+        <!-- STEP 5: SUBMIT -->
         <div class="step-block" id="step-submit">
           <button type="submit" class="submit-btn" id="submitBtn" disabled>Submit Registration</button>
           <p class="form-error" id="formError"></p>
@@ -358,15 +331,11 @@ const CONFIG = {
   DEPT_NAME: "PG & Research Department of Advanced Zoology and Biotechnology",
   COLLEGE_LINE: "Loyola College (Autonomous), Chennai – 34",
   CREST_URL: "https://static.wixstatic.com/media/81ba89_514c18d8af5e4574b4812e7d27775511~mv2.png",
-  MAX_FILE_MB: 10,
-  WELCOME_BODY: "Kindly submit your details on or before the deadline below.",
-  FIRST_YEAR_CODE: "26"
+  WELCOME_BODY: "Kindly submit your details on or before the deadline below."
 };
 
 let DEADLINE = new Date("2099-01-01T00:00:00+05:30");
 let EMAIL_DOMAIN = "college.edu";
-let MAX_FILE_MB = 10;
-let MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
 
 function jsonpRequest(url){
   return new Promise((resolve, reject)=>{
@@ -406,9 +375,6 @@ function applyConfig(){
     const d = new Date(CONFIG.DEADLINE);
     if(!isNaN(d.getTime())) DEADLINE = d;
   }
-  MAX_FILE_MB = Number(CONFIG.MAX_FILE_MB) || MAX_FILE_MB;
-  MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
-  document.getElementById('maxFileLabel').textContent = MAX_FILE_MB;
 }
 
 /* ============ WELCOME MODAL + DEADLINE ============ */
@@ -629,11 +595,13 @@ function checkRegistrationStatus(specimenId){
     '&email=' + encodeURIComponent(email) + '&_ts=' + Date.now());
 }
 
-async function runDuplicateCheck(specimenId){
-  const token = ++idCheckToken;
-  resetGate();
+let idCheckRetries = 0;
+
+async function runDuplicateCheck(specimenId, isRetry){
+  const token = isRetry ? idCheckToken : ++idCheckToken;
+  if(!isRetry){ idCheckRetries = 0; resetGate(); }
   fieldId.classList.add('checking');
-  setIdStatus('checking', 'Checking Department ID…');
+  setIdStatus('checking', isRetry ? ('Checking Department ID… (retry ' + idCheckRetries + ')') : 'Checking Department ID…');
   let result;
   try{
     result = await checkRegistrationStatus(specimenId);
@@ -641,12 +609,7 @@ async function runDuplicateCheck(specimenId){
   } catch(err){
     console.warn('[ZALC duplicate check] id=' + specimenId + ' FAILED (network/permission issue):', err);
     if(token !== idCheckToken) return;
-    fieldId.classList.remove('checking');
-    setIdStatus('warn', "Couldn't verify right now — check your connection. You may continue, but a duplicate ID will still be rejected when you submit.");
-    idVerified = true;
-    gatedFields.classList.add('revealed');
-    updateClassOptions();
-    validateForm();
+    handleCheckFailure(specimenId, token);
     return;
   }
   if(token !== idCheckToken) return;
@@ -659,12 +622,38 @@ async function runDuplicateCheck(specimenId){
     idVerified = true;
     gatedFields.classList.add('revealed');
   } else {
-    setIdStatus('warn', "Couldn't verify this ID right now. You may continue, but duplicates are still rejected when you submit.");
-    idVerified = true;
-    gatedFields.classList.add('revealed');
+    // Any other status (e.g. a server-side "error") means we could NOT
+    // properly confirm this ID is free — do NOT let the student proceed on
+    // an unverified ID, or a real duplicate could slip past the live check
+    // and only get caught (confusingly, after the whole form is filled in)
+    // at final submit.
+    handleCheckFailure(specimenId, token);
+    return;
   }
   updateClassOptions();
   validateForm();
+}
+
+// Retries a couple of times automatically (handles brief network blips
+// without bothering the student), then locks the form and asks them to tap
+// to retry manually — it deliberately does NOT unlock the rest of the form
+// on failure, so an already-registered ID can never be filled out fully
+// before being rejected.
+function handleCheckFailure(specimenId, token){
+  fieldId.classList.remove('checking');
+  idCheckRetries++;
+  if(idCheckRetries <= 2){
+    setTimeout(()=>{ if(token === idCheckToken) runDuplicateCheck(specimenId, true); }, 1200);
+    return;
+  }
+  resetGate();
+  setIdStatus('error', "Couldn't verify this Department ID — tap here to retry.");
+  idStatusEl.style.cursor = 'pointer';
+  idStatusEl.onclick = ()=>{
+    idStatusEl.onclick = null;
+    idStatusEl.style.cursor = '';
+    runDuplicateCheck(specimenId);
+  };
 }
 
 /* ============ CLASS OPTIONS (depend on UAZ / PZO) ============ */
@@ -678,7 +667,7 @@ function updateClassOptions(){
   const prevVal = classSelect.value;
   classSelect.innerHTML = '<option value="">Select class</option>' + list.map(c=>`<option value="${c}">${c}</option>`).join('');
   if(list.includes(prevVal)) classSelect.value = prevVal; else classSelect.value = '';
-  updatePhotoRequirement();
+  validateForm();
 }
 
 function updateIdState(){
@@ -759,77 +748,7 @@ dobInput.addEventListener('change', ()=>{
 
 classSelect.addEventListener('change', ()=>{
   document.getElementById('field-class').classList.remove('invalid');
-  updatePhotoRequirement(); validateForm();
-});
-
-/* ============ PHOTO REQUIREMENT (skip for 1st UG / 1st PG) ============ */
-const fieldPhoto = document.getElementById('field-photo');
-function needsPhoto(){
-  const cls = classSelect.value;
-  if(cls === '') return false;
-  const firstYearCode = CONFIG.FIRST_YEAR_CODE ? String(CONFIG.FIRST_YEAR_CODE).trim() : '';
-  if(firstYearCode && segValues.dept === firstYearCode){
-    return false;
-  }
-  if(!firstYearCode){
-    return cls !== '1st UG' && cls !== '1st PG';
-  }
-  return true;
-}
-function updatePhotoRequirement(){
-  if(!needsPhoto()){
-    fileBase64 = null; fileName = null; fileMime = null;
-    filePreview.classList.remove('show');
-    dropzone.classList.remove('has-file');
-  }
   validateForm();
-}
-
-/* ============ FILE UPLOAD ============ */
-const dropzone = document.getElementById('dropzone');
-const photoFile = document.getElementById('photoFile');
-const filePreview = document.getElementById('filePreview');
-const fileMeta = document.getElementById('fileMeta');
-const fieldPhotoErr = document.getElementById('field-photo');
-let fileBase64 = null, fileMime = null, fileName = null;
-
-dropzone.addEventListener('click', ()=>photoFile.click());
-
-photoFile.addEventListener('change', ()=>{
-  const f = photoFile.files[0];
-  fieldPhotoErr.classList.remove('invalid');
-  if(!f) return;
-  const allowed = ['image/png','image/jpeg'];
-  if(!allowed.includes(f.type)){
-    fieldPhotoErr.classList.add('invalid');
-    document.getElementById('err-photo').textContent = 'Only JPG or PNG images are allowed.';
-    filePreview.classList.remove('show');
-    fileBase64 = null;
-    validateForm();
-    return;
-  }
-  if(f.size > MAX_FILE_BYTES){
-    fieldPhotoErr.classList.add('invalid');
-    document.getElementById('err-photo').textContent = 'File is too large — max ' + MAX_FILE_MB + ' MB (yours is ' + (f.size/1024/1024).toFixed(1) + ' MB).';
-    filePreview.classList.remove('show');
-    fileBase64 = null;
-    validateForm();
-    return;
-  }
-  fileName = f.name; fileMime = f.type;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    fileBase64 = reader.result.split(',')[1];
-    dropzone.classList.add('has-file');
-    filePreview.classList.add('show');
-    const sizeKb = (f.size/1024).toFixed(0);
-    document.getElementById('fileIcon').src = reader.result;
-    const img = new Image();
-    img.onload = ()=>{ fileMeta.innerHTML = `<b>${fileName}</b>${img.width}×${img.height}px · ${sizeKb} KB`; };
-    img.src = reader.result;
-    validateForm();
-  };
-  reader.readAsDataURL(f);
 });
 
 /* ============ VALIDATION + STEP-BY-STEP REVEAL ============ */
@@ -850,15 +769,9 @@ function validateForm(){
   document.getElementById('step-dob').classList.toggle('revealed', nameOk && classOk && mobileOk);
 
   const dobOk = !!dobInput.value;
+  document.getElementById('step-submit').classList.toggle('revealed', nameOk && classOk && mobileOk && dobOk);
 
-  const photoStepUnlocked = nameOk && classOk && mobileOk && dobOk;
-  document.getElementById('step-photo').classList.toggle('revealed', photoStepUnlocked);
-  fieldPhoto.style.display = (photoStepUnlocked && needsPhoto()) ? '' : 'none';
-
-  const photoOk = !needsPhoto() || !!fileBase64;
-  document.getElementById('step-submit').classList.toggle('revealed', photoStepUnlocked && photoOk);
-
-  submitBtn.disabled = !(idOk && idVerified && nameOk && classOk && mobileOk && dobOk && photoOk) || isClosed();
+  submitBtn.disabled = !(idOk && idVerified && nameOk && classOk && mobileOk && dobOk) || isClosed();
 }
 
 /* ============ SUBMIT ============ */
@@ -895,10 +808,7 @@ regForm.addEventListener('submit', async (e)=>{
     specimenId, batchCode, name: nameInput.value.trim(), email,
     studentClass: classSelect.value,
     mobile: mobileInput.value,
-    dob: dobInput.value,
-    fileName: needsPhoto() ? fileName : '',
-    fileMimeType: needsPhoto() ? fileMime : '',
-    fileData: needsPhoto() ? fileBase64 : ''
+    dob: dobInput.value
   };
 
   if(APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
